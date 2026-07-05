@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlancoXCBeatz — Producer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f5f5f5;
+      --surface-raised: #fafafa;
+      --surface-hover: #f0f0f0;
+      --text: #1a1a1a;
+      --text-mid: #555555;
+      --text-dim: #888888;
+      --accent: #1a1a1a;
+      --accent-soft: rgba(26,26,26,0.06);
+      --accent-soft-border: rgba(26,26,26,0.1);
+      --border: rgba(0,0,0,0.06);
+      --progress-bg: rgba(0,0,0,0.08);
+      --pad: clamp(16px, 4vw, 80px);
+      --wave-color: rgba(26,26,26,0.5);
+      --wave-active: rgba(26,26,26,0.9);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0a0a0a;
+        --surface: #111111;
+        --surface-raised: #151515;
+        --surface-hover: #1c1c1c;
+        --text: #eae5db;
+        --text-mid: #b8b0a4;
+        --text-dim: #968e82;
+        --accent: #c8a45e;
+        --accent-soft: rgba(200,164,94,0.08);
+        --accent-soft-border: rgba(200,164,94,0.12);
+        --border: rgba(255,255,255,0.06);
+        --progress-bg: rgba(255,255,255,0.08);
+        --wave-color: rgba(200,164,94,0.35);
+        --wave-active: rgba(200,164,94,0.85);
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .fade {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Nav ── */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
+      width: 100%;
+      padding: 14px var(--pad);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      padding: 7px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      transition: all 0.2s ease;
+    }
+    .back-link:hover {
+      color: var(--text);
+      border-color: var(--accent-soft-border);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-genres {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 580px;
+      max-height: 880px;
+      overflow: hidden;
+    }
+
+    .hero-img {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transform: scale(1.05);
+      transition: transform 8s ease-out;
+    }
+
+    .hero.loaded .hero-img { transform: scale(1); }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        color-mix(in srgb, var(--bg) 97%) 0%,
+        color-mix(in srgb, var(--bg) 50%) 40%,
+        color-mix(in srgb, var(--bg) 8%) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 var(--pad) clamp(36px, 5vh, 72px);
+    }
+
+    .hero-label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .hero-content h2 {
+      font-size: clamp(2.6rem, 6vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.04em;
+      margin-bottom: 12px;
+    }
+
+    .hero-content p {
+      font-size: 0.92rem;
+      color: var(--text-mid);
+      font-weight: 400;
+      max-width: 44ch;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.01em;
+    }
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { opacity: 0.88; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent-soft-border); }
+
+    /* ── Sections ── */
+    .section {
+      width: 100%;
+      padding: clamp(48px, 8vw, 100px) var(--pad);
+    }
+
+    .section-alt { background: var(--surface); }
+
+    .section-label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .section-rule {
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.35;
+      margin-bottom: 36px;
+    }
+
+    /* ── Beat Cards ── */
+    .beats-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .beat-card {
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      align-items: center;
+      gap: 0;
+      background: var(--surface-raised);
+      padding: 0;
+      transition: background 0.2s ease;
+    }
+
+    .beat-card:hover { background: var(--surface-hover); }
+
+    .beat-art {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+    }
+
+    .beat-art img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .beat-card:hover .beat-art img { transform: scale(1.04); }
+
+    .beat-info {
+      padding: 18px 22px;
+      min-width: 0;
+    }
+
+    .beat-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .beat-genre {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+
+    .beat-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px;
+    }
+
+    .play-btn {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      flex-shrink: 0;
+    }
+    .play-btn:hover { opacity: 0.85; transform: scale(1.05); }
+
+    .play-btn i { width: 16px; height: 16px; }
+
+    .waveform-wrap {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      height: 32px;
+      width: clamp(80px, 15vw, 200px);
+    }
+
+    .wave-bar {
+      flex: 1;
+      height: 100%;
+      border-radius: 2px;
+      background: var(--progress-bg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wave-bar-fill {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 0%;
+      background: var(--wave-color);
+      border-radius: 2px;
+      transition: height 0.15s ease, background 0.2s ease;
+    }
+
+    .beat-card.playing .wave-bar-fill {
+      background: var(--wave-active);
+    }
+
+    .time-display {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+      min-width: 38px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── Bio ── */
+    .bio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .bio-col {
+      background: var(--surface-raised);
+      padding: clamp(28px, 3vw, 40px) clamp(24px, 2.5vw, 36px);
+    }
+
+    .bio-col h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .bio-text {
+      font-size: 0.84rem;
+      color: var(--text-mid);
+      line-height: 1.7;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .tag-list li {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent-soft-border);
+    }
+
+    /* ── Footer ── */
+    footer {
+      width: 100%;
+      border-top: 1px solid var(--border);
+      padding: 22px var(--pad);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+    footer a {
+      color: var(--text-dim);
+      transition: color 0.2s ease;
+    }
+    footer a:hover { color: var(--accent); }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .nav-genres { display: none; }
+
+      .hero {
+        min-height: 480px;
+        max-height: none;
+      }
+
+      .hero-content h2 { max-width: 100%; }
+
+      .beat-card {
+        grid-template-columns: 64px 1fr auto;
+      }
+
+      .beat-info { padding: 14px 16px; }
+      .beat-controls { padding: 14px 16px; gap: 12px; }
+
+      .waveform-wrap { width: 80px; }
+
+      .bio-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .beat-card {
+        grid-template-columns: 56px 1fr;
+        grid-template-rows: auto auto;
+      }
+
+      .beat-art {
+        grid-row: 1 / -1;
+      }
+
+      .beat-controls {
+        grid-column: 2;
+        padding: 0 16px 14px;
+        gap: 10px;
+      }
+
+      .waveform-wrap { width: 100%; flex: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav">
+      <a class="back-link" href="../../index.html">
+        <i data-lucide="arrow-left" style="width:13px;height:13px"></i>
+        kasimadewebz
+      </a>
+      <div class="nav-right">
+        <span class="nav-genres">RnB · Hip-Hop · Trap</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero" id="heroEl">
+      <img class="hero-img" src="_images/lovely.jpg" alt="BlancoXCBeatz">
+      <div class="hero-overlay"></div>
+      <div class="hero-content fade">
+        <div class="hero-label">Music Producer</div>
+        <h2>BlancoXCBeatz</h2>
+        <p>RnB, Hip-Hop & Trap production. Crafting melodies that move.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#beats">Listen Now</a>
+          <a class="btn btn-ghost" href="#about">About</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Beats -->
+    <section class="section section-alt" id="beats">
+      <div class="fade">
+        <div class="section-label">Discography</div>
+        <div class="section-rule"></div>
+        <h2 class="section-title">Beats</h2>
+      </div>
+
+      <div class="beats-list fade">
+        <!-- Beat 1 -->
+        <div class="beat-card" data-src="_audio/Lovely_-_BlancoXCBeats.mp3">
+          <div class="beat-art">
+            <img src="_images/lovely.jpg" alt="Lovely">
+          </div>
+          <div class="beat-info">
+            <div class="beat-name">Lovely</div>
+            <div class="beat-genre">RnB / Trap</div>
+          </div>
+          <div class="beat-controls">
+            <button class="play-btn" aria-label="Play Lovely">
+              <i data-lucide="play" class="play-icon"></i>
+            </button>
+            <div class="waveform-wrap"></div>
+            <span class="time-display">0:00</span>
+          </div>
+        </div>
+
+        <!-- Beat 2 -->
+        <div class="beat-card" data-src="_audio/Kyro.mp3">
+          <div class="beat-art">
+            <img src="_images/kyro.jpg" alt="Kyro">
+          </div>
+          <div class="beat-info">
+            <div class="beat-name">Kyro</div>
+            <div class="beat-genre">RnB / Hip-Hop</div>
+          </div>
+          <div class="beat-controls">
+            <button class="play-btn" aria-label="Play Kyro">
+              <i data-lucide="play" class="play-icon"></i>
+            </button>
+            <div class="waveform-wrap"></div>
+            <span class="time-display">0:00</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about">
+      <div class="fade">
+        <div class="section-label">Background</div>
+        <div class="section-rule"></div>
+        <h2 class="section-title">About</h2>
+      </div>
+
+      <div class="bio-grid fade">
+        <div class="bio-col">
+          <h3>Who I Am</h3>
+          <p class="bio-text">
+            BlancoXCBeatz is a music producer specialising in RnB, Hip-Hop and Trap. Focused on melodic hooks, hard-hitting drums, and textures that give artists a distinct sound to build on.
+          </p>
+        </div>
+        <div class="bio-col">
+          <h3>Genres</h3>
+          <ul class="tag-list">
+            <li>RnB</li>
+            <li>Hip-Hop</li>
+            <li>Trap</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <span>© 2026 BlancoXCBeatz</span>
+    <a href="../../index.html">Built by kasimadewebz</a>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // Hero zoom
+    window.addEventListener('load', () => {
+      document.getElementById('heroEl').classList.add('loaded');
+    });
+
+    // Scroll reveal
+    const fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.06, rootMargin: '0px 0px -16px 0px' });
+    document.querySelectorAll('.fade').forEach(el => fadeObserver.observe(el));
+
+    // ── Audio Player ──
+    const audio = new Audio();
+    let currentCard = null;
+    let rafId = null;
+
+    // Generate waveform bars for each beat card
+    document.querySelectorAll('.beat-card').forEach(card => {
+      const wrap = card.querySelector('.waveform-wrap');
+      const barCount = window.innerWidth <= 480 ? 24 : 32;
+      for (let i = 0; i < barCount; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'wave-bar';
+        bar.innerHTML = '<div class="wave-bar-fill"></div>';
+        wrap.appendChild(bar);
+      }
+    });
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return m + ':' + String(s).padStart(2, '0');
+    }
+
+    function stopAll() {
+      audio.pause();
+      audio.currentTime = 0;
+      cancelAnimationFrame(rafId);
+      if (currentCard) {
+        currentCard.classList.remove('playing');
+        currentCard.querySelectorAll('.wave-bar-fill').forEach(f => f.style.height = '0%');
+        const timeEl = currentCard.querySelector('.time-display');
+        const name = currentCard.querySelector('.beat-name').textContent;
+        timeEl.textContent = '0:00';
+        const icon = currentCard.querySelector('.play-icon');
+        icon.setAttribute('data-lucide', 'play');
+        lucide.createIcons({ nodes: [icon] });
+        currentCard = null;
+      }
+    }
+
+    function updateWaveform() {
+      if (audio.paused) return;
+      const bars = currentCard.querySelectorAll('.wave-bar-fill');
+      const progress = audio.currentTime / audio.duration;
+      bars.forEach((fill, i) => {
+        const barProgress = (i + 1) / bars.length;
+        if (barProgress <= progress) {
+          const h = 40 + Math.random() * 60;
+          fill.style.height = h + '%';
+        } else {
+          fill.style.height = (8 + Math.random() * 18) + '%';
+        }
+      });
+      const timeEl = currentCard.querySelector('.time-display');
+      timeEl.textContent = formatTime(audio.currentTime);
+      rafId = requestAnimationFrame(updateWaveform);
+    }
+
+    function playCard(card) {
+      const src = card.dataset.src;
+      if (currentCard === card) {
+        if (audio.paused) {
+          audio.play();
+          card.classList.add('playing');
+          updateWaveform();
+        } else {
+          audio.pause();
+          card.classList.remove('playing');
+          cancelAnimationFrame(rafId);
+        }
+        return;
+      }
+
+      stopAll();
+      audio.src = src;
+      currentCard = card;
+      const icon = card.querySelector('.play-icon');
+      icon.setAttribute('data-lucide', 'pause');
+      lucide.createIcons({ nodes: [icon] });
+      audio.play().then(() => {
+        card.classList.add('playing');
+        updateWaveform();
+      }).catch(() => {});
+    }
+
+    document.querySelectorAll('.play-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        playCard(btn.closest('.beat-card'));
+      });
+    });
+
+    audio.addEventListener('ended', stopAll);
+  </script>
+</body>
+</html>

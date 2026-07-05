@@ -1,0 +1,7 @@
+_images
+	hero.jpg
+	beat1.jpg
+	beat2.jpg
+_audio
+	beat1.mp3
+	beat2.mp3
