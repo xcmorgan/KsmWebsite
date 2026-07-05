@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kasimadewebz — Static Websites for Businesses</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-raised: #151515;
+            --surface-hover: #1c1c1c;
+            --text: #eae5db;
+            --text-mid: #b8b0a4;
+            --text-dim: #968e82;
+            --gold: #c8a45e;
+            --gold-hover: #d4b06a;
+            --gold-soft: rgba(200,164,94,0.08);
+            --gold-soft-border: rgba(200,164,94,0.12);
+            --border: rgba(255,255,255,0.06);
+            --pad: clamp(16px, 4vw, 80px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+            overflow-x: hidden;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        .fade {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .fade.visible { opacity: 1; transform: translateY(0); }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--surface-raised);
+            border: 1px solid var(--gold-soft-border);
+            color: var(--text);
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            backdrop-filter: blur(12px);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── Nav ── */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(10,10,10,0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+            width: 100%;
+            padding: 14px var(--pad);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            background: var(--gold);
+            display: grid;
+            place-items: center;
+            color: #0a0a0a;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .brand h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            line-height: 1.2;
+        }
+
+        .brand span {
+            font-size: 0.62rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-mid);
+            transition: color 0.2s ease;
+        }
+        .nav-links a:hover { color: var(--text); }
+
+        .btn-nav {
+            background: var(--gold) !important;
+            color: #0a0a0a !important;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600 !important;
+            transition: background 0.2s ease !important;
+        }
+        .btn-nav:hover { background: var(--gold-hover) !important; }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .mobile-menu {
+            display: none;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 16px var(--pad);
+        }
+
+        .mobile-menu.open { display: flex; flex-direction: column; gap: 12px; }
+
+        .mobile-menu a {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-mid);
+            padding: 8px 0;
+            transition: color 0.2s ease;
+        }
+        .mobile-menu a:hover { color: var(--text); }
+
+        .mobile-menu .btn-mobile {
+            background: var(--gold);
+            color: #0a0a0a;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* ── WhatsApp ── */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9998;
+        }
+        .whatsapp-float a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #25D366;
+            color: white;
+            font-family: 'Manrope', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 11px 16px;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.25);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .whatsapp-float a:hover {
+            background: #1ebe5d;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(37, 211, 102, 0.35);
+        }
+        .whatsapp-float .wa-icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+        @media (max-width: 768px) {
+            .whatsapp-float a span.wa-text { display: none; }
+            .whatsapp-float a { padding: 11px; border-radius: 50%; }
+        }
+
+        /* ── Hero ── */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 600px;
+            max-height: 920px;
+            overflow: hidden;
+        }
+
+        .hero-img {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transform: scale(1.05);
+            transition: transform 8s ease-out;
+        }
+
+        .hero.loaded .hero-img { transform: scale(1); }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                rgba(10,10,10,0.97) 0%,
+                rgba(10,10,10,0.5) 35%,
+                rgba(10,10,10,0.08) 100%
+            );
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0 var(--pad) clamp(40px, 6vh, 80px);
+        }
+
+        .hero-label {
+            font-size: 0.62rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--gold);
+            margin-bottom: 14px;
+        }
+
+        .hero-content h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.4rem, 5.5vw, 5rem);
+            font-weight: 400;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            max-width: 12ch;
+            margin-bottom: 16px;
+        }
+
+        .hero-content p {
+            color: var(--text-mid);
+            font-size: 0.95rem;
+            font-weight: 300;
+            max-width: 48ch;
+            margin-bottom: 32px;
+            line-height: 1.75;
+        }
+
+        .hero-content p strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .hero-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 26px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.02em;
+        }
+        .btn:hover { transform: translateY(-1px); }
+
+        .btn-gold { background: var(--gold); color: #0a0a0a; }
+        .btn-gold:hover { background: var(--gold-hover); }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.18);
+        }
+        .btn-ghost:hover { border-color: rgba(255,255,255,0.35); }
+
+        /* ── Sections ── */
+        .section {
+            width: 100%;
+            padding: clamp(56px, 9vw, 110px) var(--pad);
+        }
+
+        .section-alt { background: var(--surface); }
+
+        .section-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.6rem, 3vw, 2.6rem);
+            font-weight: 400;
+            letter-spacing: -0.01em;
+            margin-bottom: 12px;
+        }
+
+        .section-rule {
+            width: 48px;
+            height: 1px;
+            background: var(--gold);
+            opacity: 0.35;
+            margin-bottom: 40px;
+        }
+
+        /* ── Services ── */
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .service-col {
+            background: var(--surface-raised);
+            padding: clamp(28px, 3.5vw, 44px) clamp(24px, 3vw, 36px);
+        }
+
+        .service-col h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+
+        .service-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .service-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.82rem;
+            color: var(--text-mid);
+            line-height: 1.6;
+        }
+
+        .service-list .dot {
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: var(--gold);
+            opacity: 0.7;
+            flex-shrink: 0;
+            margin-top: 9px;
+        }
+
+        .service-list .dot-dim {
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            opacity: 0.5;
+            flex-shrink: 0;
+            margin-top: 9px;
+        }
+
+        /* ── Process ── */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .step {
+            background: var(--surface-raised);
+            padding: clamp(24px, 2.5vw, 36px) clamp(18px, 2vw, 28px);
+        }
+
+        .step-num {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: #0a0a0a;
+            display: grid;
+            place-items: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .step h4 {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            font-size: 0.76rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+            font-weight: 300;
+        }
+
+        /* ── Projects ── */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .project-card {
+            display: block;
+            background: var(--surface-raised);
+            transition: background 0.3s ease;
+        }
+
+        .project-card:hover { background: var(--surface-hover); }
+
+        .project-img-wrap {
+            overflow: hidden;
+            aspect-ratio: 16/10;
+        }
+
+        .project-img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease, filter 0.5s ease;
+            filter: brightness(0.78);
+        }
+
+        .project-card:hover .project-img {
+            transform: scale(1.03);
+            filter: brightness(0.9);
+        }
+
+        .project-info {
+            padding: clamp(18px, 2vw, 26px) clamp(18px, 2.5vw, 28px);
+        }
+
+        .project-tag {
+            font-size: 0.58rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+
+        .project-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .project-desc {
+            font-size: 0.76rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .project-price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-top: 6px;
+        }
+
+        /* ── Pricing ── */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 0.75fr 1.25fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .pricing-includes {
+            background: var(--surface-raised);
+            padding: clamp(28px, 3.5vw, 44px) clamp(24px, 3vw, 36px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pricing-includes h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 24px;
+        }
+
+        .pricing-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .pricing-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.84rem;
+            color: var(--text-mid);
+            line-height: 1.55;
+        }
+
+        .pricing-list li i {
+            width: 16px; height: 16px;
+            color: var(--gold);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .pricing-pdf {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .pricing-pdf a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-mid);
+            transition: color 0.2s ease;
+        }
+        .pricing-pdf a:hover { color: var(--gold); }
+        .pricing-pdf a i { width: 14px; height: 14px; }
+
+        .pricing-main {
+            background: var(--surface-raised);
+            padding: clamp(28px, 3.5vw, 44px) clamp(24px, 3vw, 36px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-main::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0.4;
+        }
+
+        .pricing-label {
+            font-size: 0.58rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+        }
+
+        .pricing-amount {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .pricing-amount .price {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 600;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .pricing-amount .per {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+        }
+
+        .pricing-deposit {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            margin-bottom: 28px;
+            font-weight: 300;
+        }
+
+        .pricing-note {
+            background: var(--gold-soft);
+            border: 1px solid var(--gold-soft-border);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 28px;
+        }
+
+        .pricing-note p {
+            font-size: 0.8rem;
+            color: var(--text-mid);
+            line-height: 1.65;
+        }
+
+        .pricing-note strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .btn-order {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gold);
+            color: #0a0a0a;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: all 0.25s ease;
+            letter-spacing: 0.01em;
+        }
+        .btn-order:hover { background: var(--gold-hover); transform: translateY(-1px); }
+
+        /* ── Suitable For ── */
+        .for-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .for-item {
+            background: var(--surface-raised);
+            padding: clamp(22px, 2.5vw, 36px) clamp(16px, 2vw, 28px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .for-item:hover { background: var(--surface-hover); }
+
+        .for-item i {
+            width: 22px; height: 22px;
+            color: var(--gold);
+            opacity: 0.75;
+        }
+
+        .for-item p {
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-mid);
+        }
+
+        /* ── Contact ── */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .contact-main {
+            background: var(--surface-raised);
+            padding: clamp(28px, 3.5vw, 44px) clamp(24px, 3vw, 36px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .contact-main p {
+            font-size: 0.88rem;
+            color: var(--text-mid);
+            line-height: 1.7;
+            margin-bottom: 28px;
+            font-weight: 300;
+        }
+
+        .contact-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-email {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gold);
+            color: #0a0a0a;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+        }
+        .btn-email:hover { background: var(--gold-hover); transform: translateY(-1px); }
+
+        .btn-pdf {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: var(--text-mid);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+        .btn-pdf:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+        .btn-pdf i { width: 14px; height: 14px; }
+
+        .contact-email-card {
+            background: var(--surface-raised);
+            padding: clamp(28px, 3.5vw, 44px) clamp(24px, 3vw, 36px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 16px;
+        }
+
+        .email-icon {
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            background: var(--gold-soft);
+            display: grid;
+            place-items: center;
+        }
+        .email-icon i { width: 20px; height: 20px; color: var(--gold); }
+
+        #copyEmailBtn {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            font-family: 'Manrope', sans-serif;
+        }
+        #copyEmailBtn:hover { color: var(--gold); }
+
+        .copy-hint {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        /* ── Footer ── */
+        footer {
+            width: 100%;
+            border-top: 1px solid var(--border);
+            padding: 24px var(--pad);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+        }
+        footer a {
+            color: var(--text-dim);
+            transition: color 0.2s ease;
+        }
+        footer a:hover { color: var(--gold); }
+
+        /* ── Mobile ── */
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .mobile-toggle { display: block; }
+
+            .services-grid,
+            .pricing-grid,
+            .contact-grid { grid-template-columns: 1fr; }
+
+            .steps-grid { grid-template-columns: 1fr 1fr; }
+            .steps-grid .step:last-child { grid-column: 1 / -1; }
+
+            .projects-grid { grid-template-columns: 1fr 1fr; }
+            .projects-grid .project-card:last-child { grid-column: 1 / -1; }
+
+            .for-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 640px) {
+            .hero {
+                min-height: 520px;
+                max-height: none;
+            }
+
+            .hero-content h2 { max-width: 100%; }
+
+            .projects-grid { grid-template-columns: 1fr; }
+            .projects-grid .project-card:last-child { grid-column: auto; }
+
+            .steps-grid { grid-template-columns: 1fr; }
+            .steps-grid .step:last-child { grid-column: auto; }
+
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                padding-bottom: 32px;
+            }
+
+            .contact-btns { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">Email copied to clipboard</div>
+
+    <!-- Navigation -->
+    <header>
+        <div class="nav">
+            <a class="brand" href="#">
+                <div class="brand-mark">KW</div>
+                <div>
+                    <h1>kasimadewebz</h1>
+                    <span>Static Websites for Business</span>
+                </div>
+            </a>
+            <div class="nav-links">
+                <a href="#services">Services</a>
+                <a href="#process">Process</a>
+                <a href="#projects">Examples</a>
+                <a href="#pricing">Pricing</a>
+                <a href="mailto:fluentwebsites026@gmail.com" class="btn-nav">Get in Touch</a>
+            </div>
+            <button class="mobile-toggle" id="mobileMenuBtn">
+                <i data-lucide="menu" style="width:18px;height:18px"></i>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#services">Services</a>
+            <a href="#process">Process</a>
+            <a href="#projects">Examples</a>
+            <a href="#pricing">Pricing</a>
+            <a href="mailto:fluentwebsites026@gmail.com" class="btn-mobile">Get in Touch</a>
+        </div>
+    </header>
+
+    <!-- WhatsApp Floating Button -->
+    <div class="whatsapp-float">
+        <a href="https://wa.me/27610859002" target="_blank" rel="noopener noreferrer">
+            <svg class="wa-icon" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            <span class="wa-text">WhatsApp</span>
+        </a>
+    </div>
+
+    <main>
+
+        <!-- Hero -->
+        <section class="hero" id="heroEl">
+            <img class="hero-img" src="/_images/hero.jpg" alt="kasimadewebz">
+            <div class="hero-overlay"></div>
+            <div class="hero-content fade">
+                <div class="hero-label">Static Websites for Businesses</div>
+                <h2>kasimadewebz</h2>
+                <p>Clean, fast, affordable websites for <strong>resorts, guesthouses, restaurants</strong> and small businesses.</p>
+                <div class="hero-ctas">
+                    <a class="btn btn-gold" href="mailto:fluentwebsites026@gmail.com">Order Your Website</a>
+                    <a class="btn btn-ghost" href="#process">How it works</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services -->
+        <section class="section section-alt" id="services">
+            <div class="fade">
+                <div class="section-label">Services</div>
+                <div class="section-rule"></div>
+                <h2 class="section-title">What you get</h2>
+            </div>
+            <div class="services-grid fade">
+                <div class="service-col">
+                    <h3>Included</h3>
+                    <ul class="service-list">
+                        <li><span class="dot"></span><span>Custom-designed pages with your content, images, and branding</span></li>
+                        <li><span class="dot"></span><span>Mobile-responsive layout that works on all devices</span></li>
+                        <li><span class="dot"></span><span>Image gallery, contact section, embedded map</span></li>
+                        <li><span class="dot"></span><span>Links to WhatsApp, social media, or booking platforms</span></li>
+                        <li><span class="dot"></span><span>Free hosting setup guidance (Netlify, Vercel, etc.)</span></li>
+                        <li><span class="dot"></span><span>Fast loading — no database, no server processing</span></li>
+                    </ul>
+                </div>
+                <div class="service-col">
+                    <h3>Good to know</h3>
+                    <ul class="service-list">
+                        <li><span class="dot-dim"></span><span>Online bookings/payments require a third-party link (e.g. Bookings.com)</span></li>
+                        <li><span class="dot-dim"></span><span>No admin panel or login system — changes are made by me</span></li>
+                        <li><span class="dot-dim"></span><span>Not suitable for blogs, e-commerce, or user dashboards</span></li>
+                        <li><span class="dot-dim"></span><span>Contact forms use a third-party service (e.g. Formspree)</span></li>
+                        <li><span class="dot-dim"></span><span>Domain name purchased separately (~R100–R200/year)</span></li>
+                        <li><span class="dot-dim"></span><span>Built as simple, fast, informative pages — not web apps</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Process -->
+        <section class="section" id="process">
+            <div class="fade">
+                <div class="section-label">Process</div>
+                <div class="section-rule"></div>
+                <h2 class="section-title">How to get your website</h2>
+            </div>
+            <div class="steps-grid fade">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <h4>Reach Out</h4>
+                    <p>Send an email or WhatsApp with your business name and what you do.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <h4>Share Content</h4>
+                    <p>Send me your images, text, logo, and any other content for the site.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <h4>I Build It</h4>
+                    <p>I design and code your website. This typically takes a few days.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <h4>Review</h4>
+                    <p>You review the site and let me know if any changes are needed.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">5</div>
+                    <h4>Delivered</h4>
+                    <p>Pay the balance. You receive the final files and hosting setup guidance.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects -->
+        <section class="section section-alt" id="projects">
+            <div class="fade">
+                <div class="section-label">Examples</div>
+                <div class="section-rule"></div>
+                <h2 class="section-title">Websites I can build for you</h2>
+            </div>
+            <div class="projects-grid fade">
+                <a href="/_projects/_guesthouse/guesthouse.html" class="project-card">
+                    <div class="project-img-wrap">
+                        <img src="/_projects/_guesthouse/_images/guesthouse.jpg" alt="Sample Guesthouse Website" class="project-img">
+                    </div>
+                    <div class="project-info">
+                        <div class="project-tag">Guesthouse</div>
+                        <div class="project-name">Sample Guesthouse</div>
+                        <p class="project-desc">Gallery, contact section & embedded map</p>
+                    </div>
+                </a>
+                <a href="/_projects/_resort/resort.html" class="project-card">
+                    <div class="project-img-wrap">
+                        <img src="_projects/_resort/_images/resort.jpg" alt="KswResorts — Sample Resort Website" class="project-img">
+                    </div>
+                    <div class="project-info">
+                        <div class="project-tag">Resort</div>
+                        <div class="project-name">KswResorts</div>
+                        <p class="project-desc">Full-width imagery & booking links</p>
+                    </div>
+                </a>
+                <a href="/_projects/_profile/profile.html" class="project-card">
+                    <div class="project-img-wrap">
+                        <img src="_images/blanco.jpg" alt="Profile Website" class="project-img">
+                    </div>
+                    <div class="project-info">
+                        <div class="project-tag">Profile</div>
+                        <div class="project-name">Profile Website</div>
+                        <p class="project-desc">Clean personal profile with audio player</p>
+                        <div class="project-price">From R350</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Pricing -->
+        <section class="section" id="pricing">
+            <div class="fade">
+                <div class="section-label">Pricing</div>
+                <div class="section-rule"></div>
+                <h2 class="section-title">Business websites — R600</h2>
+            </div>
+            <div class="pricing-grid fade">
+                <div class="pricing-includes">
+                    <h3>What's included</h3>
+                    <ul class="pricing-list">
+                        <li><i data-lucide="check"></i><span>Custom-designed pages (up to 5 sections)</span></li>
+                        <li><i data-lucide="check"></i><span>Mobile-responsive layout</span></li>
+                        <li><i data-lucide="check"></i><span>Image gallery & contact section</span></li>
+                        <li><i data-lucide="check"></i><span>Free hosting setup guidance</span></li>
+                        <li><i data-lucide="check"></i><span>Delivery within a few days</span></li>
+                    </ul>
+                    <div class="pricing-pdf">
+                        <a href="https://www.mediafire.com/file/xdwhw0cx3ngc7xo/clientRequirements.pdf/file" target="_blank" rel="noopener noreferrer">
+                            <i data-lucide="file-text"></i>
+                            Download Requirements PDF
+                        </a>
+                    </div>
+                </div>
+                <div class="pricing-main">
+                    <div>
+                        <div class="pricing-label">Static Website</div>
+                        <div class="pricing-amount">
+                            <span class="price">R600</span>
+                            <span class="per">once-off</span>
+                        </div>
+                        <p class="pricing-deposit">R150 deposit to start. Remaining R450 on completion.</p>
+                        <div class="pricing-note">
+                            <p><strong>Domain name not included.</strong> Your web address (e.g. <strong>www.yourlodge.co.za</strong>) is purchased separately from registrars like Hostinger or Namecheap — around R100–R200/year.</p>
+                        </div>
+                    </div>
+                    <a href="mailto:fluentwebsites026@gmail.com" class="btn-order">Order Now — R600</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Suitable For -->
+        <section class="section section-alt">
+            <div class="fade">
+                <div class="section-label">Who It's For</div>
+                <div class="section-rule"></div>
+                <h2 class="section-title">Perfect for</h2>
+            </div>
+            <div class="for-grid fade">
+                <div class="for-item">
+                    <i data-lucide="palmtree"></i>
+                    <p>Resorts</p>
+                </div>
+                <div class="for-item">
+                    <i data-lucide="home"></i>
+                    <p>Lodges</p>
+                </div>
+                <div class="for-item">
+                    <i data-lucide="bed-double"></i>
+                    <p>Guesthouses</p>
+                </div>
+                <div class="for-item">
+                    <i data-lucide="coffee"></i>
+                    <p>B&Bs</p>
+                </div>
+                <div class="for-item">
+                    <i data-lucide="utensils"></i>
+                    <p>Restaurants</p>
+                </div>
+                <div class="for-item">
+                    <i data-lucide="scissors"></i>
+                    <p>Salons</p>
+                </div>
+                <div class="for-item">
+                    <i data-lucide="wrench"></i>
+                    <p>Services</p>
+                </div>
+                <div class="for-item">
+                    <i data-lucide="store"></i>
+                    <p>Small Businesses</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact -->
+        <section class="section">
+            <div class="fade">
+                <div class="section-label">Get Started</div>
+                <div class="section-rule"></div>
+                <h2 class="section-title">Ready to get online?</h2>
+            </div>
+            <div class="contact-grid fade">
+                <div class="contact-main">
+                    <p>Send me an email with your business name, what you do, and any content or images you'd like on your site. I'll take it from there.</p>
+                    <div class="contact-btns">
+                        <a href="mailto:fluentwebsites026@gmail.com?subject=New%20Website%20Order" class="btn-email">Send an Email</a>
+                        <a href="https://www.mediafire.com/file/xdwhw0cx3ngc7xo/clientRequirements.pdf/file" target="_blank" rel="noopener noreferrer" class="btn-pdf">
+                            <i data-lucide="download"></i>
+                            Requirements PDF
+                        </a>
+                    </div>
+                </div>
+                <div class="contact-email-card">
+                    <div class="email-icon">
+                        <i data-lucide="mail"></i>
+                    </div>
+                    <div>
+                        <button id="copyEmailBtn">fluentwebsites026@gmail.com</button>
+                        <span class="copy-hint">Click to copy</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <span>© 2026 kasimadewebz. All rights reserved.</span>
+        <a href="mailto:fluentwebsites026@gmail.com">fluentwebsites026@gmail.com</a>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        window.addEventListener('load', () => {
+            document.getElementById('heroEl').classList.add('loaded');
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        let menuOpen = false;
+        mobileMenuBtn.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            mobileMenu.classList.toggle('open', menuOpen);
+        });
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuOpen = false;
+                mobileMenu.classList.remove('open');
+            });
+        });
+
+        const copyBtn = document.getElementById('copyEmailBtn');
+        const toast = document.getElementById('toast');
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText('fluentwebsites026@gmail.com').then(() => {
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.06, rootMargin: '0px 0px -20px 0px' });
+
+        document.querySelectorAll('.fade').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
