@@ -9,39 +9,19 @@
   <style>
     :root {
       --bg: #ffffff;
-      --surface: #f5f5f5;
-      --surface-raised: #fafafa;
+      --surface: #f7f7f7;
       --surface-hover: #f0f0f0;
       --text: #1a1a1a;
       --text-mid: #555555;
-      --text-dim: #888888;
+      --text-dim: #999999;
       --accent: #1a1a1a;
-      --accent-soft: rgba(26,26,26,0.06);
+      --accent-soft: rgba(26,26,26,0.05);
       --accent-soft-border: rgba(26,26,26,0.1);
       --border: rgba(0,0,0,0.06);
-      --progress-bg: rgba(0,0,0,0.08);
-      --pad: clamp(16px, 4vw, 80px);
-      --wave-color: rgba(26,26,26,0.5);
-      --wave-active: rgba(26,26,26,0.9);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0a0a0a;
-        --surface: #111111;
-        --surface-raised: #151515;
-        --surface-hover: #1c1c1c;
-        --text: #eae5db;
-        --text-mid: #b8b0a4;
-        --text-dim: #968e82;
-        --accent: #c8a45e;
-        --accent-soft: rgba(200,164,94,0.08);
-        --accent-soft-border: rgba(200,164,94,0.12);
-        --border: rgba(255,255,255,0.06);
-        --progress-bg: rgba(255,255,255,0.08);
-        --wave-color: rgba(200,164,94,0.35);
-        --wave-active: rgba(200,164,94,0.85);
-      }
+      --progress-bg: rgba(0,0,0,0.06);
+      --wave-color: rgba(26,26,26,0.35);
+      --wave-active: rgba(26,26,26,0.8);
+      --now-playing-bg: rgba(255,255,255,0.94);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -59,68 +39,62 @@
 
     .fade {
       opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      transform: translateY(12px);
+      transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
     }
     .fade.visible { opacity: 1; transform: translateY(0); }
+    .fade.d1 { transition-delay: 0.08s; }
+    .fade.d2 { transition-delay: 0.16s; }
 
-    /* ── Nav ── */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      background: color-mix(in srgb, var(--bg) 70%, transparent);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.4s ease;
     }
+    header.scrolled { border-bottom-color: var(--border); }
 
     .nav {
       width: 100%;
-      padding: 14px var(--pad);
+      padding: 16px var(--pad);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
+    :root { --pad: clamp(20px, 5vw, 80px); }
+
     .back-link {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.72rem;
+      gap: 7px;
+      font-size: 0.7rem;
       font-weight: 500;
       color: var(--text-dim);
-      padding: 7px 14px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      transition: all 0.2s ease;
+      transition: color 0.2s ease;
+      letter-spacing: 0.02em;
     }
-    .back-link:hover {
-      color: var(--text);
-      border-color: var(--accent-soft-border);
-    }
+    .back-link:hover { color: var(--text); }
 
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .nav-genres {
-      font-size: 0.68rem;
+    .nav-tag {
+      font-size: 0.62rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       color: var(--text-dim);
+      opacity: 0.7;
     }
 
-    /* ── Hero ── */
     .hero {
       position: relative;
       width: 100%;
       height: 100vh;
-      min-height: 580px;
-      max-height: 880px;
+      min-height: 560px;
+      max-height: 860px;
       overflow: hidden;
     }
 
@@ -129,10 +103,9 @@
       inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
-      transform: scale(1.05);
-      transition: transform 8s ease-out;
+      transform: scale(1.06);
+      transition: transform 10s cubic-bezier(0.16,1,0.3,1);
     }
-
     .hero.loaded .hero-img { transform: scale(1); }
 
     .hero-overlay {
@@ -140,9 +113,9 @@
       inset: 0;
       background: linear-gradient(
         to top,
-        color-mix(in srgb, var(--bg) 97%) 0%,
-        color-mix(in srgb, var(--bg) 50%) 40%,
-        color-mix(in srgb, var(--bg) 8%) 100%
+        #ffffff 0%,
+        rgba(255,255,255,0.45) 45%,
+        rgba(255,255,255,0.05) 100%
       );
     }
 
@@ -153,33 +126,34 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 0 var(--pad) clamp(36px, 5vh, 72px);
+      padding: 0 var(--pad) clamp(40px, 6vh, 80px);
     }
 
     .hero-label {
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.3em;
+      letter-spacing: 0.35em;
       color: var(--accent);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      opacity: 0.8;
     }
 
     .hero-content h2 {
-      font-size: clamp(2.6rem, 6vw, 5.5rem);
+      font-size: clamp(2.8rem, 7vw, 6rem);
       font-weight: 800;
-      line-height: 1.0;
-      letter-spacing: -0.04em;
-      margin-bottom: 12px;
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+      margin-bottom: 16px;
     }
 
     .hero-content p {
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       color: var(--text-mid);
       font-weight: 400;
-      max-width: 44ch;
-      line-height: 1.7;
-      margin-bottom: 24px;
+      max-width: 40ch;
+      line-height: 1.75;
+      margin-bottom: 28px;
     }
 
     .hero-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -188,18 +162,19 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 11px 22px;
+      padding: 10px 20px;
       border-radius: 8px;
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       font-weight: 600;
       border: none;
       cursor: pointer;
       transition: all 0.2s ease;
       letter-spacing: 0.01em;
+      font-family: inherit;
     }
     .btn:hover { transform: translateY(-1px); }
 
-    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary { background: var(--accent); color: #fff; }
     .btn-primary:hover { opacity: 0.88; }
 
     .btn-ghost {
@@ -209,282 +184,394 @@
     }
     .btn-ghost:hover { border-color: var(--accent-soft-border); }
 
-    /* ── Sections ── */
-    .section {
-      width: 100%;
-      padding: clamp(48px, 8vw, 100px) var(--pad);
+    .btn-whatsapp {
+      background: #25D366;
+      color: #fff;
+      box-shadow:
+        0 0 8px rgba(255,255,255,0.6),
+        0 0 20px rgba(255,255,255,0.3),
+        0 0 40px rgba(255,255,255,0.15);
+      animation: glowPulse 2.5s ease-in-out infinite;
+    }
+    .btn-whatsapp:hover {
+      background: #20bd5a;
+      box-shadow:
+        0 0 12px rgba(255,255,255,0.8),
+        0 0 30px rgba(255,255,255,0.4),
+        0 0 60px rgba(255,255,255,0.2);
+      transform: translateY(-2px);
     }
 
-    .section-alt { background: var(--surface); }
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 8px rgba(255,255,255,0.6),
+          0 0 20px rgba(255,255,255,0.3),
+          0 0 40px rgba(255,255,255,0.15);
+      }
+      50% {
+        box-shadow:
+          0 0 14px rgba(255,255,255,0.9),
+          0 0 35px rgba(255,255,255,0.45),
+          0 0 60px rgba(255,255,255,0.2);
+      }
+    }
+
+    .section {
+      width: 100%;
+      padding: clamp(56px, 9vw, 110px) var(--pad);
+    }
 
     .section-label {
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.3em;
+      letter-spacing: 0.35em;
       color: var(--accent);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      opacity: 0.8;
     }
 
     .section-title {
-      font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
       font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 12px;
+      letter-spacing: -0.025em;
+      margin-bottom: 8px;
     }
 
-    .section-rule {
-      width: 40px;
-      height: 1px;
-      background: var(--accent);
-      opacity: 0.35;
-      margin-bottom: 36px;
+    .section-sub {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+      font-weight: 400;
     }
 
-    /* ── Beat Cards ── */
-    .beats-list {
+    .section-actions {
       display: flex;
-      flex-direction: column;
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 40px;
     }
 
-    .beat-card {
+    .btn-sm { padding: 8px 16px; font-size: 0.7rem; border-radius: 7px; }
+
+    .btn-play-all {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: inherit;
+    }
+    .btn-play-all:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .btn-shuffle {
+      background: transparent;
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: inherit;
+    }
+    .btn-shuffle:hover { border-color: var(--accent-soft-border); color: var(--text); }
+
+    .track-list { display: flex; flex-direction: column; }
+
+    .track-row {
       display: grid;
-      grid-template-columns: 80px 1fr auto;
+      grid-template-columns: 36px 1fr auto;
       align-items: center;
       gap: 0;
-      background: var(--surface-raised);
-      padding: 0;
-      transition: background 0.2s ease;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .track-row:last-child { border-bottom: none; }
+    .track-row:hover { background: rgba(0,0,0,0.015); }
+
+    .track-num {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+      text-align: center;
     }
 
-    .beat-card:hover { background: var(--surface-hover); }
+    .track-row.playing .track-num { color: var(--accent); }
 
-    .beat-art {
-      width: 100%;
-      aspect-ratio: 1;
-      overflow: hidden;
-    }
-
-    .beat-art img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.4s ease;
-    }
-    .beat-card:hover .beat-art img { transform: scale(1.04); }
-
-    .beat-info {
-      padding: 18px 22px;
+    .track-meta {
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
-    .beat-name {
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 3px;
+    .track-name {
+      font-size: 0.9rem;
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      letter-spacing: -0.01em;
     }
 
-    .beat-genre {
-      font-size: 0.68rem;
-      font-weight: 600;
+    .track-genre {
+      font-size: 0.62rem;
+      font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--accent);
+      color: var(--text-dim);
     }
 
-    .beat-controls {
+    .track-right {
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 18px 22px;
+      gap: 14px;
     }
 
-    .play-btn {
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: var(--bg);
-      border: none;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      flex-shrink: 0;
-    }
-    .play-btn:hover { opacity: 0.85; transform: scale(1.05); }
-
-    .play-btn i { width: 16px; height: 16px; }
-
-    .waveform-wrap {
+    .waveform-mini {
       display: flex;
       align-items: center;
-      gap: 2px;
-      height: 32px;
-      width: clamp(80px, 15vw, 200px);
+      gap: 1.5px;
+      height: 24px;
+      width: clamp(60px, 12vw, 140px);
     }
 
-    .wave-bar {
+    .wbar {
       flex: 1;
       height: 100%;
-      border-radius: 2px;
+      border-radius: 1.5px;
       background: var(--progress-bg);
       position: relative;
       overflow: hidden;
     }
 
-    .wave-bar-fill {
+    .wbar-fill {
       position: absolute;
       bottom: 0; left: 0; right: 0;
       height: 0%;
       background: var(--wave-color);
-      border-radius: 2px;
-      transition: height 0.15s ease, background 0.2s ease;
+      border-radius: 1.5px;
+      transition: height 0.12s ease, background 0.25s ease;
     }
 
-    .beat-card.playing .wave-bar-fill {
-      background: var(--wave-active);
-    }
+    .track-row.playing .wbar-fill { background: var(--wave-active); }
 
-    .time-display {
-      font-size: 0.68rem;
+    .track-time {
+      font-size: 0.66rem;
       font-weight: 500;
       color: var(--text-dim);
       font-variant-numeric: tabular-nums;
-      min-width: 38px;
+      min-width: 36px;
       text-align: right;
-      flex-shrink: 0;
     }
 
-    /* ── Bio ── */
-    .bio-grid {
+    .track-play-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      cursor: pointer;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
+      place-items: center;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      flex-shrink: 0;
+      opacity: 1;
     }
+    .track-play-icon:hover { transform: scale(1.12); }
+    .track-play-icon i { width: 13px; height: 13px; }
 
-    .bio-col {
-      background: var(--surface-raised);
-      padding: clamp(28px, 3vw, 40px) clamp(24px, 2.5vw, 36px);
-    }
+    .bio-block { max-width: 560px; }
 
-    .bio-col h3 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 18px;
-    }
-
-    .bio-text {
-      font-size: 0.84rem;
+    .bio-block p {
+      font-size: 0.86rem;
       color: var(--text-mid);
-      line-height: 1.7;
+      line-height: 1.8;
+      margin-bottom: 28px;
     }
 
-    .tag-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      list-style: none;
-    }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
 
-    .tag-list li {
-      font-size: 0.72rem;
+    .tag {
+      font-size: 0.68rem;
       font-weight: 600;
-      padding: 6px 14px;
+      padding: 6px 16px;
       border-radius: 999px;
       background: var(--accent-soft);
       color: var(--accent);
       border: 1px solid var(--accent-soft-border);
     }
 
-    /* ── Footer ── */
+    .contact-section {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .contact-section p {
+      font-size: 0.84rem;
+      color: var(--text-mid);
+      max-width: 36ch;
+      line-height: 1.7;
+    }
+
+    .np-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 99;
+      background: var(--now-playing-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid var(--border);
+      padding: 12px var(--pad);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+      transform: translateY(100%);
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    .np-bar.active { transform: translateY(0); }
+
+    .np-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .np-thumb {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--surface);
+    }
+    .np-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .np-info { min-width: 0; }
+    .np-title {
+      font-size: 0.76rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .np-artist {
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .np-center { display: flex; align-items: center; gap: 10px; }
+
+    .np-btn {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .np-btn:hover { opacity: 0.85; transform: scale(1.08); }
+    .np-btn i { width: 14px; height: 14px; }
+
+    .np-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+    }
+
+    .np-wave {
+      display: flex;
+      align-items: center;
+      gap: 1.5px;
+      height: 22px;
+      width: clamp(80px, 18vw, 220px);
+    }
+
+    .np-wbar {
+      flex: 1;
+      height: 100%;
+      border-radius: 1.5px;
+      background: var(--progress-bg);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .np-wbar-fill {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 0%;
+      background: var(--wave-active);
+      border-radius: 1.5px;
+      transition: height 0.1s ease;
+    }
+
+    .np-time {
+      font-size: 0.64rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
+      min-width: 70px;
+      text-align: right;
+    }
+
     footer {
       width: 100%;
-      border-top: 1px solid var(--border);
-      padding: 22px var(--pad);
+      padding: 24px var(--pad);
+      padding-bottom: calc(24px + 64px);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.7rem;
+      font-size: 0.66rem;
       color: var(--text-dim);
     }
-    footer a {
-      color: var(--text-dim);
-      transition: color 0.2s ease;
-    }
+    footer a { color: var(--text-dim); transition: color 0.2s ease; }
     footer a:hover { color: var(--accent); }
 
-    /* ── Mobile ── */
     @media (max-width: 768px) {
-      .nav-genres { display: none; }
-
-      .hero {
-        min-height: 480px;
-        max-height: none;
-      }
-
-      .hero-content h2 { max-width: 100%; }
-
-      .beat-card {
-        grid-template-columns: 64px 1fr auto;
-      }
-
-      .beat-info { padding: 14px 16px; }
-      .beat-controls { padding: 14px 16px; gap: 12px; }
-
-      .waveform-wrap { width: 80px; }
-
-      .bio-grid { grid-template-columns: 1fr; }
+      .nav-tag { display: none; }
+      .hero { min-height: 460px; max-height: none; }
+      .track-row { grid-template-columns: 28px 1fr auto; padding: 12px 0; }
+      .track-right { gap: 10px; }
+      .waveform-mini { width: 50px; }
+      .np-bar { grid-template-columns: 1fr auto; gap: 10px; padding: 10px var(--pad); }
+      .np-right { display: none; }
     }
 
     @media (max-width: 480px) {
-      .beat-card {
-        grid-template-columns: 56px 1fr;
-        grid-template-rows: auto auto;
-      }
-
-      .beat-art {
-        grid-row: 1 / -1;
-      }
-
-      .beat-controls {
-        grid-column: 2;
-        padding: 0 16px 14px;
-        gap: 10px;
-      }
-
-      .waveform-wrap { width: 100%; flex: 1; }
+      .waveform-mini { display: none; }
+      .hero-content h2 { font-size: 2.4rem; }
+      .section-actions { gap: 8px; }
     }
   </style>
 </head>
 <body>
 
-  <header>
+  <header id="headerEl">
     <div class="nav">
       <a class="back-link" href="../../index.html">
         <i data-lucide="arrow-left" style="width:13px;height:13px"></i>
         kasimadewebz
       </a>
-      <div class="nav-right">
-        <span class="nav-genres">RnB · Hip-Hop · Trap</span>
-      </div>
+      <span class="nav-tag">RnB · Hip-Hop · Trap</span>
     </div>
   </header>
 
   <main>
 
-    <!-- Hero -->
     <section class="hero" id="heroEl">
       <img class="hero-img" src="_images/lovely.jpg" alt="BlancoXCBeatz">
       <div class="hero-overlay"></div>
@@ -495,282 +582,385 @@
         <div class="hero-ctas">
           <a class="btn btn-primary" href="#beats">Listen Now</a>
           <a class="btn btn-ghost" href="#about">About</a>
+          <a class="btn btn-whatsapp" href="https://wa.me/270610859002" target="_blank" rel="noopener">
+            <i data-lucide="message-circle" style="width:14px;height:14px"></i>
+            Contact Me
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- Beats -->
-    <section class="section section-alt" id="beats">
+    <section class="section" id="beats">
       <div class="fade">
         <div class="section-label">Discography</div>
-        <div class="section-rule"></div>
         <h2 class="section-title">Beats</h2>
+        <p class="section-sub">8 tracks · 2024–2025</p>
       </div>
 
-      <div class="beats-list fade">
+      <div class="section-actions fade d1">
+        <button class="btn btn-sm btn-play-all" id="playAllBtn">
+          <i data-lucide="play" style="width:13px;height:13px"></i>
+          Play All
+        </button>
+        <button class="btn btn-sm btn-shuffle" id="shuffleBtn">
+          <i data-lucide="shuffle" style="width:13px;height:13px"></i>
+          Shuffle
+        </button>
+      </div>
 
-        <!-- Lovely -->
-        <div class="beat-card" data-src="_audio/Lovely_-_BlancoXCBeats.mp3">
-          <div class="beat-art">
-            <img src="_images/lovely.jpg" alt="Lovely">
+      <div class="track-list fade d2" id="trackList">
+
+        <div class="track-row" data-src="_audio/Lovely_-_BlancoXCBeats.mp3" data-img="_images/lovely.jpg">
+          <span class="track-num">01</span>
+          <div class="track-meta">
+            <span class="track-name">Lovely</span>
+            <span class="track-genre">RnB / Trap</span>
           </div>
-          <div class="beat-info">
-            <div class="beat-name">Lovely</div>
-            <div class="beat-genre">RnB / Trap</div>
-          </div>
-          <div class="beat-controls">
-            <button class="play-btn" aria-label="Play Lovely">
-              <i data-lucide="play" class="play-icon"></i>
-            </button>
-            <div class="waveform-wrap"></div>
-            <span class="time-display">0:00</span>
+          <div class="track-right">
+            <div class="waveform-mini"></div>
+            <span class="track-time">0:00</span>
+            <button class="track-play-icon" aria-label="Play"><i data-lucide="play" class="t-icon"></i></button>
           </div>
         </div>
 
-        <!-- Kyro -->
-        <div class="beat-card" data-src="_audio/Kyro.mp3">
-          <div class="beat-art">
-            <img src="_images/kyro.jpg" alt="Kyro">
+        <div class="track-row" data-src="_audio/Kyro.mp3" data-img="_images/kyro.jpg">
+          <span class="track-num">02</span>
+          <div class="track-meta">
+            <span class="track-name">Kyro</span>
+            <span class="track-genre">RnB / Hip-Hop</span>
           </div>
-          <div class="beat-info">
-            <div class="beat-name">Kyro</div>
-            <div class="beat-genre">RnB / Hip-Hop</div>
-          </div>
-          <div class="beat-controls">
-            <button class="play-btn" aria-label="Play Kyro">
-              <i data-lucide="play" class="play-icon"></i>
-            </button>
-            <div class="waveform-wrap"></div>
-            <span class="time-display">0:00</span>
+          <div class="track-right">
+            <div class="waveform-mini"></div>
+            <span class="track-time">0:00</span>
+            <button class="track-play-icon" aria-label="Play"><i data-lucide="play" class="t-icon"></i></button>
           </div>
         </div>
 
-        <!-- $Dilong -->
-        <div class="beat-card" data-src="_audio/$Dilong.mp3">
-          <div class="beat-art">
-            <img src="_images/lovely.jpg" alt="$Dilong">
+        <div class="track-row" data-src="_audio/Kyro(Remix) - BlancoXCBeats.mp3" data-img="_images/kyroremix.jpg">
+          <span class="track-num">03</span>
+          <div class="track-meta">
+            <span class="track-name">Kyro (Remix)</span>
+            <span class="track-genre">RnB / Hip-Hop</span>
           </div>
-          <div class="beat-info">
-            <div class="beat-name">$Dilong</div>
-            <div class="beat-genre">Trap</div>
-          </div>
-          <div class="beat-controls">
-            <button class="play-btn" aria-label="Play $Dilong">
-              <i data-lucide="play" class="play-icon"></i>
-            </button>
-            <div class="waveform-wrap"></div>
-            <span class="time-display">0:00</span>
+          <div class="track-right">
+            <div class="waveform-mini"></div>
+            <span class="track-time">0:00</span>
+            <button class="track-play-icon" aria-label="Play"><i data-lucide="play" class="t-icon"></i></button>
           </div>
         </div>
 
-        <!-- Backstab -->
-        <div class="beat-card" data-src="_audio/Backstab.mp3">
-          <div class="beat-art">
-            <img src="_images/lovely.jpg" alt="Backstab">
+        <div class="track-row" data-src="_audio/$Dilong.mp3" data-img="_images/lovely.jpg">
+          <span class="track-num">04</span>
+          <div class="track-meta">
+            <span class="track-name">$Dilong</span>
+            <span class="track-genre">Trap</span>
           </div>
-          <div class="beat-info">
-            <div class="beat-name">Backstab</div>
-            <div class="beat-genre">Trap</div>
-          </div>
-          <div class="beat-controls">
-            <button class="play-btn" aria-label="Play Backstab">
-              <i data-lucide="play" class="play-icon"></i>
-            </button>
-            <div class="waveform-wrap"></div>
-            <span class="time-display">0:00</span>
+          <div class="track-right">
+            <div class="waveform-mini"></div>
+            <span class="track-time">0:00</span>
+            <button class="track-play-icon" aria-label="Play"><i data-lucide="play" class="t-icon"></i></button>
           </div>
         </div>
 
-        <!-- Fade -->
-        <div class="beat-card" data-src="_audio/Fade_-_BlancoXC.mp3">
-          <div class="beat-art">
-            <img src="_images/lovely.jpg" alt="Fade">
+        <div class="track-row" data-src="_audio/Backstab.mp3" data-img="_images/lovely.jpg">
+          <span class="track-num">05</span>
+          <div class="track-meta">
+            <span class="track-name">Backstab</span>
+            <span class="track-genre">Trap</span>
           </div>
-          <div class="beat-info">
-            <div class="beat-name">Fade</div>
-            <div class="beat-genre">RnB</div>
-          </div>
-          <div class="beat-controls">
-            <button class="play-btn" aria-label="Play Fade">
-              <i data-lucide="play" class="play-icon"></i>
-            </button>
-            <div class="waveform-wrap"></div>
-            <span class="time-display">0:00</span>
+          <div class="track-right">
+            <div class="waveform-mini"></div>
+            <span class="track-time">0:00</span>
+            <button class="track-play-icon" aria-label="Play"><i data-lucide="play" class="t-icon"></i></button>
           </div>
         </div>
 
-        <!-- Paradise -->
-        <div class="beat-card" data-src="_audio/Paradise.mp3">
-          <div class="beat-art">
-            <img src="_images/lovely.jpg" alt="Paradise">
+        <div class="track-row" data-src="_audio/Fade_-_BlancoXC.mp3" data-img="_images/lovely.jpg">
+          <span class="track-num">06</span>
+          <div class="track-meta">
+            <span class="track-name">Fade</span>
+            <span class="track-genre">RnB</span>
           </div>
-          <div class="beat-info">
-            <div class="beat-name">Paradise</div>
-            <div class="beat-genre">Hip-Hop</div>
-          </div>
-          <div class="beat-controls">
-            <button class="play-btn" aria-label="Play Paradise">
-              <i data-lucide="play" class="play-icon"></i>
-            </button>
-            <div class="waveform-wrap"></div>
-            <span class="time-display">0:00</span>
+          <div class="track-right">
+            <div class="waveform-mini"></div>
+            <span class="track-time">0:00</span>
+            <button class="track-play-icon" aria-label="Play"><i data-lucide="play" class="t-icon"></i></button>
           </div>
         </div>
 
-        <!-- Stay -->
-        <div class="beat-card" data-src="_audio/Stay_-_BlancoXC.mp3">
-          <div class="beat-art">
-            <img src="_images/lovely.jpg" alt="Stay">
+        <div class="track-row" data-src="_audio/Paradise.mp3" data-img="_images/lovely.jpg">
+          <span class="track-num">07</span>
+          <div class="track-meta">
+            <span class="track-name">Paradise</span>
+            <span class="track-genre">Hip-Hop</span>
           </div>
-          <div class="beat-info">
-            <div class="beat-name">Stay</div>
-            <div class="beat-genre">RnB</div>
+          <div class="track-right">
+            <div class="waveform-mini"></div>
+            <span class="track-time">0:00</span>
+            <button class="track-play-icon" aria-label="Play"><i data-lucide="play" class="t-icon"></i></button>
           </div>
-          <div class="beat-controls">
-            <button class="play-btn" aria-label="Play Stay">
-              <i data-lucide="play" class="play-icon"></i>
-            </button>
-            <div class="waveform-wrap"></div>
-            <span class="time-display">0:00</span>
+        </div>
+
+        <div class="track-row" data-src="_audio/Stay_-_BlancoXC.mp3" data-img="_images/lovely.jpg">
+          <span class="track-num">08</span>
+          <div class="track-meta">
+            <span class="track-name">Stay</span>
+            <span class="track-genre">RnB</span>
+          </div>
+          <div class="track-right">
+            <div class="waveform-mini"></div>
+            <span class="track-time">0:00</span>
+            <button class="track-play-icon" aria-label="Play"><i data-lucide="play" class="t-icon"></i></button>
           </div>
         </div>
 
       </div>
     </section>
 
-    <!-- About -->
-    <section class="section" id="about">
+    <section class="section" id="about" style="background:var(--surface)">
       <div class="fade">
         <div class="section-label">Background</div>
-        <div class="section-rule"></div>
         <h2 class="section-title">About</h2>
       </div>
+      <div class="bio-block fade d1">
+        <p>
+          BlancoXCBeatz is a music producer specialising in RnB, Hip-Hop and Trap. Focused on melodic hooks, hard-hitting drums, and textures that give artists a distinct sound to build on. Every beat is designed to feel — not just sound.
+        </p>
+        <div class="tags">
+          <span class="tag">RnB</span>
+          <span class="tag">Hip-Hop</span>
+          <span class="tag">Trap</span>
+        </div>
+      </div>
+    </section>
 
-      <div class="bio-grid fade">
-        <div class="bio-col">
-          <h3>Who I Am</h3>
-          <p class="bio-text">
-            BlancoXCBeatz is a music producer specialising in RnB, Hip-Hop and Trap. Focused on melodic hooks, hard-hitting drums, and textures that give artists a distinct sound to build on.
-          </p>
-        </div>
-        <div class="bio-col">
-          <h3>Genres</h3>
-          <ul class="tag-list">
-            <li>RnB</li>
-            <li>Hip-Hop</li>
-            <li>Trap</li>
-          </ul>
-        </div>
+    <section class="section">
+      <div class="contact-section fade">
+        <div class="section-label">Get In Touch</div>
+        <h2 class="section-title">Let's Work</h2>
+        <p>Interested in a beat or want to collaborate? Reach out directly on WhatsApp.</p>
+        <a class="btn btn-whatsapp" href="https://wa.me/270610859002" target="_blank" rel="noopener" style="margin-top:8px">
+          <i data-lucide="message-circle" style="width:15px;height:15px"></i>
+          Contact Me on WhatsApp
+        </a>
       </div>
     </section>
 
   </main>
 
+  <div class="np-bar" id="npBar">
+    <div class="np-left">
+      <div class="np-thumb"><img id="npImg" src="" alt=""></div>
+      <div class="np-info">
+        <div class="np-title" id="npTitle">—</div>
+        <div class="np-artist">BlancoXCBeatz</div>
+      </div>
+    </div>
+    <div class="np-center">
+      <button class="np-btn" id="npPlayBtn" aria-label="Play/Pause">
+        <i data-lucide="pause" id="npIcon"></i>
+      </button>
+    </div>
+    <div class="np-right">
+      <div class="np-wave" id="npWave"></div>
+      <span class="np-time" id="npTime">0:00 / 0:00</span>
+    </div>
+  </div>
+
   <footer>
-    <span>© 2026 BlancoXCBeatz</span>
+    <span>© 2025 BlancoXCBeatz</span>
     <a href="../../index.html">Built by kasimadewebz</a>
   </footer>
 
   <script>
     lucide.createIcons();
+    window.addEventListener('load', () => document.getElementById('heroEl').classList.add('loaded'));
+    window.addEventListener('scroll', () => {
+      document.getElementById('headerEl').classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
 
-    window.addEventListener('load', () => {
-      document.getElementById('heroEl').classList.add('loaded');
-    });
-
-    const fadeObserver = new IntersectionObserver((entries) => {
+    const fadeObs = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.06, rootMargin: '0px 0px -16px 0px' });
-    document.querySelectorAll('.fade').forEach(el => fadeObserver.observe(el));
+    }, { threshold: 0.05, rootMargin: '0px 0px -12px 0px' });
+    document.querySelectorAll('.fade').forEach(el => fadeObs.observe(el));
 
-    // ── Audio Player ──
-    const audio = new Audio();
-    let currentCard = null;
-    let rafId = null;
-
-    document.querySelectorAll('.beat-card').forEach(card => {
-      const wrap = card.querySelector('.waveform-wrap');
-      const barCount = window.innerWidth <= 480 ? 24 : 32;
-      for (let i = 0; i < barCount; i++) {
+    const miniCount = window.innerWidth <= 480 ? 0 : (window.innerWidth <= 768 ? 18 : 26);
+    document.querySelectorAll('.waveform-mini').forEach(wrap => {
+      for (let i = 0; i < miniCount; i++) {
         const bar = document.createElement('div');
-        bar.className = 'wave-bar';
-        bar.innerHTML = '<div class="wave-bar-fill"></div>';
+        bar.className = 'wbar';
+        bar.innerHTML = '<div class="wbar-fill"></div>';
         wrap.appendChild(bar);
       }
     });
 
-    function formatTime(sec) {
-      const m = Math.floor(sec / 60);
-      const s = Math.floor(sec % 60);
-      return m + ':' + String(s).padStart(2, '0');
+    const npWave = document.getElementById('npWave');
+    for (let i = 0; i < 40; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'np-wbar';
+      bar.innerHTML = '<div class="np-wbar-fill"></div>';
+      npWave.appendChild(bar);
+    }
+
+    const audio = new Audio();
+    let currentRow = null;
+    let rafId = null;
+    let playAllQueue = [];
+    let playAllIndex = 0;
+
+    const allRows = () => Array.from(document.querySelectorAll('.track-row'));
+
+    function fmt(s) {
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return m + ':' + String(sec).padStart(2, '0');
+    }
+
+    function setRowIcon(row, name) {
+      const ico = row.querySelector('.t-icon');
+      ico.setAttribute('data-lucide', name);
+      lucide.createIcons({ nodes: [ico] });
+    }
+
+    function setNpIcon(name) {
+      const ico = document.getElementById('npIcon');
+      ico.setAttribute('data-lucide', name);
+      lucide.createIcons({ nodes: [ico] });
     }
 
     function stopAll() {
       audio.pause();
       audio.currentTime = 0;
       cancelAnimationFrame(rafId);
-      if (currentCard) {
-        currentCard.classList.remove('playing');
-        currentCard.querySelectorAll('.wave-bar-fill').forEach(f => f.style.height = '0%');
-        currentCard.querySelector('.time-display').textContent = '0:00';
-        const icon = currentCard.querySelector('.play-icon');
-        icon.setAttribute('data-lucide', 'play');
-        lucide.createIcons({ nodes: [icon] });
-        currentCard = null;
+      if (currentRow) {
+        currentRow.classList.remove('playing');
+        currentRow.querySelectorAll('.wbar-fill').forEach(f => f.style.height = '0%');
+        currentRow.querySelector('.track-time').textContent = '0:00';
+        setRowIcon(currentRow, 'play');
+        currentRow = null;
       }
+      document.getElementById('npBar').classList.remove('active');
+      document.querySelectorAll('.np-wbar-fill').forEach(f => f.style.height = '0%');
+      document.getElementById('npTime').textContent = '0:00 / 0:00';
+      setNpIcon('play');
     }
 
-    function updateWaveform() {
+    function animate() {
       if (audio.paused) return;
-      const bars = currentCard.querySelectorAll('.wave-bar-fill');
-      const progress = audio.currentTime / audio.duration;
-      bars.forEach((fill, i) => {
-        const barProgress = (i + 1) / bars.length;
-        if (barProgress <= progress) {
-          const h = 40 + Math.random() * 60;
-          fill.style.height = h + '%';
-        } else {
-          fill.style.height = (8 + Math.random() * 18) + '%';
-        }
+      const progress = audio.duration ? audio.currentTime / audio.duration : 0;
+      if (currentRow) {
+        const bars = currentRow.querySelectorAll('.wbar-fill');
+        bars.forEach((f, i) => {
+          const bp = (i + 1) / bars.length;
+          f.style.height = bp <= progress ? (35 + Math.random() * 65) + '%' : (6 + Math.random() * 14) + '%';
+        });
+        currentRow.querySelector('.track-time').textContent = fmt(audio.currentTime);
+      }
+      const npBars = document.querySelectorAll('.np-wbar-fill');
+      npBars.forEach((f, i) => {
+        const bp = (i + 1) / npBars.length;
+        f.style.height = bp <= progress ? (30 + Math.random() * 70) + '%' : (5 + Math.random() * 12) + '%';
       });
-      currentCard.querySelector('.time-display').textContent = formatTime(audio.currentTime);
-      rafId = requestAnimationFrame(updateWaveform);
+      document.getElementById('npTime').textContent = fmt(audio.currentTime) + ' / ' + (audio.duration ? fmt(audio.duration) : '0:00');
+      rafId = requestAnimationFrame(animate);
     }
 
-    function playCard(card) {
-      const src = card.dataset.src;
-      if (currentCard === card) {
+    function playRow(row, fromQueue) {
+      const src = row.dataset.src;
+      const img = row.dataset.img;
+      const name = row.querySelector('.track-name').textContent;
+
+      if (currentRow === row && !fromQueue) {
         if (audio.paused) {
           audio.play();
-          card.classList.add('playing');
-          updateWaveform();
+          row.classList.add('playing');
+          animate();
+          setNpIcon('pause');
         } else {
           audio.pause();
-          card.classList.remove('playing');
+          row.classList.remove('playing');
           cancelAnimationFrame(rafId);
+          setNpIcon('play');
         }
         return;
       }
 
       stopAll();
       audio.src = src;
-      currentCard = card;
-      const icon = card.querySelector('.play-icon');
-      icon.setAttribute('data-lucide', 'pause');
-      lucide.createIcons({ nodes: [icon] });
+      currentRow = row;
+      document.getElementById('npTitle').textContent = name;
+      document.getElementById('npImg').src = img;
+      document.getElementById('npBar').classList.add('active');
+      setNpIcon('pause');
+      setRowIcon(row, 'pause');
+
       audio.play().then(() => {
-        card.classList.add('playing');
-        updateWaveform();
+        row.classList.add('playing');
+        animate();
       }).catch(() => {});
     }
 
-    document.querySelectorAll('.play-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        playCard(btn.closest('.beat-card'));
+    function playNext() {
+      if (playAllQueue.length === 0) { stopAll(); return; }
+      playAllIndex = (playAllIndex + 1) % playAllQueue.length;
+      playRow(playAllQueue[playAllIndex], true);
+    }
+
+    function buildQueue(shuffle) {
+      const rows = allRows();
+      if (shuffle) {
+        for (let i = rows.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [rows[i], rows[j]] = [rows[j], rows[i]];
+        }
+      }
+      playAllQueue = rows;
+      playAllIndex = 0;
+    }
+
+    document.querySelectorAll('.track-row').forEach(row => {
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('.track-play-icon')) return;
+        playRow(row, false);
       });
     });
 
-    audio.addEventListener('ended', stopAll);
+    document.querySelectorAll('.track-play-icon').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        playRow(btn.closest('.track-row'), false);
+      });
+    });
+
+    document.getElementById('playAllBtn').addEventListener('click', () => {
+      buildQueue(false);
+      if (playAllQueue.length) playRow(playAllQueue[0], true);
+    });
+
+    document.getElementById('shuffleBtn').addEventListener('click', () => {
+      buildQueue(true);
+      if (playAllQueue.length) playRow(playAllQueue[0], true);
+    });
+
+    document.getElementById('npPlayBtn').addEventListener('click', () => {
+      if (!currentRow) return;
+      playRow(currentRow, false);
+    });
+
+    npWave.addEventListener('click', (e) => {
+      if (!audio.duration) return;
+      const rect = npWave.getBoundingClientRect();
+      const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      audio.currentTime = ratio * audio.duration;
+      if (audio.paused) {
+        audio.play();
+        if (currentRow) currentRow.classList.add('playing');
+        animate();
+        setNpIcon('pause');
+      }
+    });
+
+    audio.addEventListener('ended', playNext);
   </script>
 </body>
 </html>
