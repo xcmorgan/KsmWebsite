@@ -508,7 +508,8 @@
       </div>
 
       <div class="beats-list fade">
-        <!-- Beat 1 -->
+
+        <!-- Lovely -->
         <div class="beat-card" data-src="_audio/Lovely_-_BlancoXCBeats.mp3">
           <div class="beat-art">
             <img src="_images/lovely.jpg" alt="Lovely">
@@ -526,7 +527,7 @@
           </div>
         </div>
 
-        <!-- Beat 2 -->
+        <!-- Kyro -->
         <div class="beat-card" data-src="_audio/Kyro.mp3">
           <div class="beat-art">
             <img src="_images/kyro.jpg" alt="Kyro">
@@ -543,6 +544,97 @@
             <span class="time-display">0:00</span>
           </div>
         </div>
+
+        <!-- $Dilong -->
+        <div class="beat-card" data-src="_audio/$Dilong.mp3">
+          <div class="beat-art">
+            <img src="_images/lovely.jpg" alt="$Dilong">
+          </div>
+          <div class="beat-info">
+            <div class="beat-name">$Dilong</div>
+            <div class="beat-genre">Trap</div>
+          </div>
+          <div class="beat-controls">
+            <button class="play-btn" aria-label="Play $Dilong">
+              <i data-lucide="play" class="play-icon"></i>
+            </button>
+            <div class="waveform-wrap"></div>
+            <span class="time-display">0:00</span>
+          </div>
+        </div>
+
+        <!-- Backstab -->
+        <div class="beat-card" data-src="_audio/Backstab.mp3">
+          <div class="beat-art">
+            <img src="_images/lovely.jpg" alt="Backstab">
+          </div>
+          <div class="beat-info">
+            <div class="beat-name">Backstab</div>
+            <div class="beat-genre">Trap</div>
+          </div>
+          <div class="beat-controls">
+            <button class="play-btn" aria-label="Play Backstab">
+              <i data-lucide="play" class="play-icon"></i>
+            </button>
+            <div class="waveform-wrap"></div>
+            <span class="time-display">0:00</span>
+          </div>
+        </div>
+
+        <!-- Fade -->
+        <div class="beat-card" data-src="_audio/Fade_-_BlancoXC.mp3">
+          <div class="beat-art">
+            <img src="_images/lovely.jpg" alt="Fade">
+          </div>
+          <div class="beat-info">
+            <div class="beat-name">Fade</div>
+            <div class="beat-genre">RnB</div>
+          </div>
+          <div class="beat-controls">
+            <button class="play-btn" aria-label="Play Fade">
+              <i data-lucide="play" class="play-icon"></i>
+            </button>
+            <div class="waveform-wrap"></div>
+            <span class="time-display">0:00</span>
+          </div>
+        </div>
+
+        <!-- Paradise -->
+        <div class="beat-card" data-src="_audio/Paradise.mp3">
+          <div class="beat-art">
+            <img src="_images/lovely.jpg" alt="Paradise">
+          </div>
+          <div class="beat-info">
+            <div class="beat-name">Paradise</div>
+            <div class="beat-genre">Hip-Hop</div>
+          </div>
+          <div class="beat-controls">
+            <button class="play-btn" aria-label="Play Paradise">
+              <i data-lucide="play" class="play-icon"></i>
+            </button>
+            <div class="waveform-wrap"></div>
+            <span class="time-display">0:00</span>
+          </div>
+        </div>
+
+        <!-- Stay -->
+        <div class="beat-card" data-src="_audio/Stay_-_BlancoXC.mp3">
+          <div class="beat-art">
+            <img src="_images/lovely.jpg" alt="Stay">
+          </div>
+          <div class="beat-info">
+            <div class="beat-name">Stay</div>
+            <div class="beat-genre">RnB</div>
+          </div>
+          <div class="beat-controls">
+            <button class="play-btn" aria-label="Play Stay">
+              <i data-lucide="play" class="play-icon"></i>
+            </button>
+            <div class="waveform-wrap"></div>
+            <span class="time-display">0:00</span>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -582,12 +674,10 @@
   <script>
     lucide.createIcons();
 
-    // Hero zoom
     window.addEventListener('load', () => {
       document.getElementById('heroEl').classList.add('loaded');
     });
 
-    // Scroll reveal
     const fadeObserver = new IntersectionObserver((entries) => {
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
     }, { threshold: 0.06, rootMargin: '0px 0px -16px 0px' });
@@ -598,7 +688,6 @@
     let currentCard = null;
     let rafId = null;
 
-    // Generate waveform bars for each beat card
     document.querySelectorAll('.beat-card').forEach(card => {
       const wrap = card.querySelector('.waveform-wrap');
       const barCount = window.innerWidth <= 480 ? 24 : 32;
@@ -623,9 +712,7 @@
       if (currentCard) {
         currentCard.classList.remove('playing');
         currentCard.querySelectorAll('.wave-bar-fill').forEach(f => f.style.height = '0%');
-        const timeEl = currentCard.querySelector('.time-display');
-        const name = currentCard.querySelector('.beat-name').textContent;
-        timeEl.textContent = '0:00';
+        currentCard.querySelector('.time-display').textContent = '0:00';
         const icon = currentCard.querySelector('.play-icon');
         icon.setAttribute('data-lucide', 'play');
         lucide.createIcons({ nodes: [icon] });
@@ -646,8 +733,7 @@
           fill.style.height = (8 + Math.random() * 18) + '%';
         }
       });
-      const timeEl = currentCard.querySelector('.time-display');
-      timeEl.textContent = formatTime(audio.currentTime);
+      currentCard.querySelector('.time-display').textContent = formatTime(audio.currentTime);
       rafId = requestAnimationFrame(updateWaveform);
     }
 
