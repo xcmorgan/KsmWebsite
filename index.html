@@ -454,7 +454,7 @@
         /* ── Projects ── */
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 1px;
             background: var(--border);
             border: 1px solid var(--border);
@@ -520,6 +520,54 @@
             font-weight: 600;
             color: var(--gold);
             margin-top: 6px;
+        }
+
+        /* ── Sell Beats Card (white with fade) ── */
+        .beats-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .beats-card:hover {
+            background: #f9f9f9 !important;
+        }
+
+        .beats-img-wrap {
+            position: relative;
+        }
+
+        .beats-fade-img {
+            filter: brightness(1) !important;
+        }
+
+        .beats-img-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                ellipse at center,
+                transparent 30%,
+                rgba(255,255,255,0.5) 70%,
+                rgba(255,255,255,1) 100%
+            );
+            pointer-events: none;
+        }
+
+        .beats-card:hover .beats-fade-img {
+            transform: scale(1.03) !important;
+            filter: brightness(1) !important;
+        }
+
+        .beats-card .project-tag {
+            color: #b8860b;
+        }
+
+        .beats-card .project-name {
+            color: #0a0a0a;
+        }
+
+        .beats-card .project-desc {
+            color: #666666;
         }
 
         /* ── Pricing ── */
@@ -846,7 +894,6 @@
             .steps-grid .step:last-child { grid-column: 1 / -1; }
 
             .projects-grid { grid-template-columns: 1fr 1fr; }
-            .projects-grid .project-card:last-child { grid-column: 1 / -1; }
 
             .for-grid { grid-template-columns: 1fr 1fr; }
         }
@@ -860,7 +907,6 @@
             .hero-content h2 { max-width: 100%; }
 
             .projects-grid { grid-template-columns: 1fr; }
-            .projects-grid .project-card:last-child { grid-column: auto; }
 
             .steps-grid { grid-template-columns: 1fr; }
             .steps-grid .step:last-child { grid-column: auto; }
@@ -1044,6 +1090,16 @@
                         <div class="project-name">Profile Website</div>
                         <p class="project-desc">Clean personal profile with audio player</p>
                         <div class="project-price">From R350</div>
+                    </div>
+                </a>
+                <a href="/_projects/_sellbeats/sellbeats.html" class="project-card beats-card">
+                    <div class="project-img-wrap beats-img-wrap">
+                        <img src="/_projects/_profile/_images/lovely.jpg" alt="Sell Your Beats" class="project-img beats-fade-img">
+                    </div>
+                    <div class="project-info">
+                        <div class="project-tag">Beats</div>
+                        <div class="project-name">Sell Your Beats</div>
+                        <p class="project-desc">List your beats, projects & sample packs</p>
                     </div>
                 </a>
             </div>
