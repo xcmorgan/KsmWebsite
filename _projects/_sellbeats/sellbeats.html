@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Your Beats — kasimadewebz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --black: #050505;
+            --surface: rgba(255,255,255,0.06);
+            --surface-hover: rgba(255,255,255,0.09);
+            --surface-strong: rgba(255,255,255,0.12);
+            --text: #e8e4de;
+            --text-mid: #a09888;
+            --text-dim: #6b6560;
+            --gold: #c8a45e;
+            --gold-hover: #d4b06a;
+            --gold-glow: rgba(200,164,94,0.15);
+            --border: rgba(255,255,255,0.08);
+            --pad: clamp(20px, 4vw, 80px);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--black);
+            color: var(--text);
+            line-height: 1.65;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        .fade {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        .fade.visible { opacity: 1; transform: translateY(0); }
+
+        .center { margin-left: auto; margin-right: auto; }
+
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-glow::before {
+            content: '';
+            position: absolute;
+            width: 600px; height: 600px;
+            top: -200px; right: -100px;
+            background: radial-gradient(circle, rgba(200,164,94,0.08), transparent 65%);
+            border-radius: 50%;
+        }
+
+        .bg-glow::after {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            bottom: -150px; left: -100px;
+            background: radial-gradient(circle, rgba(200,164,94,0.05), transparent 65%);
+            border-radius: 50%;
+        }
+
+        .glass {
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            max-width: 90vw;
+            text-align: center;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ── Nav ── */
+        header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(5,5,5,0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+            width: 100%;
+            padding: 16px var(--pad);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand { display: flex; align-items: center; gap: 12px; }
+
+        .brand-mark {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            background: var(--gold);
+            display: grid;
+            place-items: center;
+            color: var(--black);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 13px;
+            letter-spacing: 0.05em;
+        }
+
+        .brand h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 400;
+            letter-spacing: 0.06em;
+            line-height: 1.2;
+        }
+
+        .brand span {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-links a, .nav-links button {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-mid);
+            transition: all 0.2s ease;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'Manrope', sans-serif;
+        }
+        .nav-links a:hover, .nav-links button:hover { color: var(--text); }
+
+        .btn-nav {
+            background: var(--gold) !important;
+            color: var(--black) !important;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: 600 !important;
+        }
+        .btn-nav:hover { background: var(--gold-hover) !important; }
+
+        .back-link { display: inline-flex; align-items: center; gap: 6px; }
+        .back-link i { width: 15px; height: 15px; }
+
+        .mobile-toggle {
+            display: none;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .mobile-menu {
+            display: none;
+            background: rgba(5,5,5,0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            padding: 16px var(--pad);
+        }
+        .mobile-menu.open { display: flex; flex-direction: column; gap: 12px; }
+        .mobile-menu a {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-mid);
+            padding: 8px 0;
+        }
+        .mobile-menu .btn-mobile {
+            background: var(--gold);
+            color: var(--black);
+            text-align: center;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 600px;
+            max-height: 900px;
+            overflow: hidden;
+        }
+
+        .hero-img-wrap { position: absolute; inset: 0; }
+
+        .hero-img {
+            position: absolute;
+            inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transform: scale(1.08);
+            transition: transform 0.1s linear, opacity 0.4s ease;
+            opacity: 1;
+        }
+
+        .hero.scrolled .hero-img {
+            opacity: 0;
+            transform: scale(1.15);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(5,5,5,1) 0%, rgba(5,5,5,0.7) 30%, rgba(5,5,5,0.15) 65%, rgba(5,5,5,0.4) 100%);
+            z-index: 1;
+        }
+
+        .hero-vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(5,5,5,0) 30%, rgba(5,5,5,0.25) 60%, rgba(5,5,5,0.6) 100%);
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0 var(--pad) clamp(48px, 7vh, 100px);
+        }
+
+        .hero-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--gold);
+            margin-bottom: 14px;
+        }
+
+        .hero-content h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3rem, 8vw, 6.5rem);
+            font-weight: 400;
+            line-height: 0.95;
+            letter-spacing: 0.02em;
+            margin-bottom: 14px;
+        }
+
+        .hero-content p {
+            color: var(--text-mid);
+            font-size: 0.95rem;
+            font-weight: 300;
+            max-width: 44ch;
+            margin-bottom: 28px;
+            line-height: 1.8;
+        }
+
+        .hero-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 26px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'Manrope', sans-serif;
+        }
+        .btn:hover { transform: translateY(-1px); }
+
+        .btn-gold { background: var(--gold); color: var(--black); }
+        .btn-gold:hover { background: var(--gold-hover); box-shadow: 0 6px 24px rgba(200,164,94,0.25); }
+
+        .btn-ghost {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.14); }
+
+        /* ── Sections ── */
+        main { position: relative; z-index: 1; }
+
+        .section {
+            width: 100%;
+            padding: clamp(48px, 8vw, 100px) var(--pad);
+        }
+
+        .section-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            font-weight: 400;
+            letter-spacing: 0.03em;
+            margin-bottom: 32px;
+        }
+
+        /* ── Featured Beat ── */
+        .featured-wrap { max-width: 640px; }
+
+        .featured-card {
+            padding: clamp(28px, 4vw, 44px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            opacity: 0.3;
+        }
+
+        .featured-badge {
+            display: inline-block;
+            font-size: 0.56rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            padding: 4px 12px;
+            border-radius: 6px;
+            background: var(--gold-glow);
+            color: var(--gold);
+            border: 1px solid rgba(200,164,94,0.2);
+            margin-bottom: 20px;
+        }
+
+        .featured-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.4rem, 6vw, 4rem);
+            letter-spacing: 0.02em;
+            line-height: 0.95;
+            margin-bottom: 6px;
+        }
+
+        .featured-artist { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 28px; }
+
+        .player-wrap {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .play-btn {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: var(--black);
+            border: none;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: all 0.25s ease;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .play-btn:hover {
+            background: var(--gold-hover);
+            transform: scale(1.06);
+            box-shadow: 0 0 30px rgba(200,164,94,0.25);
+        }
+
+        .play-btn:active { transform: scale(0.95); }
+        .play-btn i { width: 20px; height: 20px; }
+        .play-btn .icon-pause { display: none; }
+        .play-btn.playing .icon-play { display: none; }
+        .play-btn.playing .icon-pause { display: block; }
+
+        .play-btn::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .play-btn.playing::before {
+            border-color: var(--gold);
+            animation: pulse-ring 2s ease-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        .player-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: height 0.15s ease;
+        }
+
+        .progress-bar-bg:hover { height: 7px; }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--gold);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.1s linear;
+            position: relative;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            right: -5px; top: 50%;
+            transform: translateY(-50%) scale(0);
+            width: 13px; height: 13px;
+            background: var(--gold);
+            border-radius: 50%;
+            transition: transform 0.15s ease;
+            box-shadow: 0 0 8px rgba(200,164,94,0.4);
+        }
+
+        .progress-bar-bg:hover .progress-bar-fill::after { transform: translateY(-50%) scale(1); }
+
+        .time-row { display: flex; justify-content: space-between; align-items: center; }
+
+        .time-display {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .now-playing {
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--gold);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .now-playing.show { opacity: 1; }
+
+        /* ── Collection Card ── */
+        .collection-wrap { max-width: 700px; }
+
+        .collection-card {
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .collection-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--black), var(--gold), var(--black));
+            opacity: 0.5;
+            z-index: 2;
+        }
+
+        .collection-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--black), var(--gold), var(--black));
+            opacity: 0.5;
+            z-index: 2;
+        }
+
+        .collection-inner {
+            padding: clamp(28px, 4vw, 44px) clamp(24px, 3.5vw, 40px);
+        }
+
+        .collection-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .collection-left { flex: 1; min-width: 200px; }
+
+        .collection-badge {
+            display: inline-block;
+            font-size: 0.56rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            padding: 4px 12px;
+            border-radius: 6px;
+            background: var(--black);
+            color: var(--gold);
+            border: 1px solid rgba(200,164,94,0.25);
+            margin-bottom: 12px;
+        }
+
+        .collection-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            letter-spacing: 0.03em;
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+
+        .collection-artist { font-size: 0.82rem; color: var(--text-dim); }
+
+        .collection-price {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2.4rem, 5vw, 3.6rem);
+            color: var(--gold);
+            line-height: 1;
+            white-space: nowrap;
+            letter-spacing: 0.02em;
+        }
+
+        .collection-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .ctag {
+            font-size: 0.66rem;
+            font-weight: 500;
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.04);
+            padding: 5px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .collection-desc {
+            font-size: 0.85rem;
+            color: var(--text-mid);
+            line-height: 1.75;
+            font-weight: 300;
+            margin-bottom: 24px;
+        }
+
+        .collection-desc strong { color: var(--text); font-weight: 500; }
+
+        /* ── Tracklist inside collection ── */
+        .tracklist-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.14em;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .tracklist {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            background: var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .track-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.03);
+            transition: background 0.2s ease;
+        }
+
+        .track-row:hover { background: rgba(255,255,255,0.06); }
+
+        .track-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .track-icon::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+            pointer-events: none;
+        }
+
+        .track-icon i { width: 16px; height: 16px; color: #fff; position: relative; z-index: 1; }
+
+        .ti-purple { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+        .ti-red { background: linear-gradient(135deg, #dc2626, #f87171); }
+        .ti-teal { background: linear-gradient(135deg, #0d9488, #2dd4bf); }
+        .ti-amber { background: linear-gradient(135deg, #d97706, #fbbf24); }
+
+        .track-info { flex: 1; min-width: 0; }
+
+        .track-num-name { display: flex; align-items: center; gap: 8px; margin-bottom: 1px; }
+
+        .track-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+            width: 18px;
+        }
+
+        .track-name {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ── Mini Player (inside track row) ── */
+        .mini-player {
+            flex-shrink: 0;
+            width: clamp(110px, 18vw, 170px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mini-play {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid var(--border);
+            color: var(--text-mid);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .mini-play:hover {
+            background: var(--gold-glow);
+            border-color: rgba(200,164,94,0.25);
+            color: var(--gold);
+        }
+
+        .mini-play:active { transform: scale(0.92); }
+
+        .mini-play i { width: 12px; height: 12px; }
+        .mini-play .icon-pause { display: none; }
+        .mini-play.playing { background: var(--gold); color: var(--black); border-color: var(--gold); }
+        .mini-play.playing .icon-play { display: none; }
+        .mini-play.playing .icon-pause { display: block; }
+
+        .mini-play::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+        }
+
+        .mini-play.playing::before {
+            border-color: var(--gold);
+            animation: pulse-ring 2s ease-out infinite;
+        }
+
+        .mini-progress-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+        }
+
+        .mini-bar-bg {
+            width: 100%;
+            height: 3px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 3px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: height 0.15s ease;
+        }
+
+        .mini-bar-bg:hover { height: 5px; }
+
+        .mini-bar-fill {
+            height: 100%;
+            background: var(--gold);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .mini-time {
+            font-size: 0.56rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            letter-spacing: 0.04em;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ── VSTs ── */
+        .collection-vsts {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+        }
+
+        .collection-vsts-title {
+            font-size: 0.56rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+        }
+
+        .vst-list { display: flex; flex-wrap: wrap; gap: 8px; }
+
+        .vst-chip {
+            font-size: 0.68rem;
+            font-weight: 500;
+            color: var(--gold);
+            background: var(--gold-glow);
+            border: 1px solid rgba(200,164,94,0.18);
+            padding: 5px 14px;
+            border-radius: 8px;
+        }
+
+        /* ── Collection Footer ── */
+        .collection-footer {
+            padding: clamp(18px, 3vw, 24px) clamp(24px, 3.5vw, 40px);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: rgba(255,255,255,0.02);
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-buy {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 28px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'Manrope', sans-serif;
+            background: var(--gold);
+            color: var(--black);
+        }
+        .btn-buy:hover {
+            background: var(--gold-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(200,164,94,0.25);
+        }
+        .btn-buy i { width: 16px; height: 16px; }
+
+        .btn-ask {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 22px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-mid);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'Manrope', sans-serif;
+        }
+        .btn-ask:hover {
+            color: var(--text);
+            border-color: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.04);
+        }
+        .btn-ask i { width: 16px; height: 16px; }
+
+        /* ── Add Your Beat ── */
+        .sale-grid { max-width: 700px; display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+        .sale-card {
+            padding: clamp(20px, 3vw, 28px) clamp(22px, 3vw, 28px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sale-card:hover {
+            background: var(--surface-hover);
+            border-color: rgba(255,255,255,0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .sale-left { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
+
+        .sale-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            background: var(--surface-strong);
+            border: 1px solid var(--border);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+        .sale-icon i { width: 20px; height: 20px; color: var(--gold); }
+
+        .sale-info h4 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.04em;
+            margin-bottom: 2px;
+        }
+
+        .sale-info p { font-size: 0.72rem; color: var(--text-dim); }
+
+        .sale-arrow {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: var(--surface-strong);
+            border: 1px solid var(--border);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            transition: all 0.25s ease;
+        }
+
+        .sale-arrow i { width: 16px; height: 16px; color: var(--text-dim); }
+
+        .sale-card:hover .sale-arrow { background: var(--gold); border-color: var(--gold); }
+        .sale-card:hover .sale-arrow i { color: var(--black); }
+
+        /* ── Footer ── */
+        footer {
+            width: 100%;
+            border-top: 1px solid var(--border);
+            padding: 24px var(--pad);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            position: relative;
+            z-index: 1;
+        }
+        footer a { color: var(--text-dim); transition: color 0.2s ease; }
+        footer a:hover { color: var(--gold); }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-toggle { display: block; }
+            .player-wrap { flex-wrap: wrap; }
+            .player-right { width: 100%; }
+            .collection-top { flex-direction: column; }
+            .collection-footer { flex-direction: column; }
+            .btn-buy, .btn-ask { justify-content: center; width: 100%; }
+            .track-row { flex-wrap: wrap; gap: 10px; }
+            .mini-player { width: 100%; padding-left: 54px; }
+        }
+
+        @media (max-width: 480px) {
+            .play-btn { width: 46px; height: 46px; }
+            .play-btn i { width: 18px; height: 18px; }
+            .mini-player { padding-left: 0; }
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                padding-bottom: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+    <div id="toast" class="toast"></div>
+
+    <header>
+        <div class="nav">
+            <a class="brand" href="../index.html">
+                <div class="brand-mark">KW</div>
+                <div>
+                    <h1>kasimadewebz</h1>
+                    <span>Static Websites for Business</span>
+                </div>
+            </a>
+            <div class="nav-links">
+                <a href="/index.html" class="back-link"><i data-lucide="arrow-left"></i> Back</a>
+                <a href="mailto:fluentwebsites026@gmail.com" class="btn-nav">Get in Touch</a>
+            </div>
+            <button class="mobile-toggle" id="mobileMenuBtn">
+                <i data-lucide="menu" style="width:18px;height:18px"></i>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/index.html"><i data-lucide="arrow-left" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:6px"></i> Back to Home</a>
+            <a href="mailto:fluentwebsites026@gmail.com" class="btn-mobile">Get in Touch</a>
+        </div>
+    </header>
+
+    <main>
+
+        <section class="hero" id="heroEl">
+            <div class="hero-img-wrap">
+                <img class="hero-img" id="heroImg" src="/_projects/_profile/_images/lovely.jpg" alt="Sell Your Beats">
+            </div>
+            <div class="hero-overlay"></div>
+            <div class="hero-vignette"></div>
+            <div class="hero-content fade">
+                <div class="hero-label">Beats Marketplace</div>
+                <h2>Sell Your Beats</h2>
+                <p>Browse available beats and projects from producers.</p>
+                <div class="hero-ctas">
+                    <a href="#featured" class="btn btn-gold"><i data-lucide="play" style="width:15px;height:15px"></i> Listen Now</a>
+                    <a href="#collection" class="btn btn-ghost"><i data-lucide="arrow-down" style="width:15px;height:15px"></i> View Collection</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Beat -->
+        <section class="section" id="featured">
+            <div class="featured-wrap center fade">
+                <div class="featured-card glass">
+                    <div class="featured-badge">Now Playing</div>
+                    <div class="featured-title">EverSince</div>
+                    <div class="featured-artist">BlancoXCBeats</div>
+                    <div class="player-wrap" data-src="/_projects/_profile/_audio/EverSInce _-_BlancoXCBeats.mp3">
+                        <button class="play-btn" aria-label="Play"><i data-lucide="play" class="icon-play"></i><i data-lucide="pause" class="icon-pause"></i></button>
+                        <div class="player-right">
+                            <div class="progress-bar-bg"><div class="progress-bar-fill"></div></div>
+                            <div class="time-row">
+                                <span class="time-display">0:00 / 0:00</span>
+                                <span class="now-playing" id="nowPlaying">Playing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Collection -->
+        <section class="section" id="collection">
+            <div class="fade">
+                <div class="section-label">For Sale</div>
+                <div class="section-title">The Collection</div>
+            </div>
+
+            <div class="collection-wrap center fade">
+                <div class="collection-card glass">
+                    <div class="collection-inner">
+                        <div class="collection-top">
+                            <div class="collection-left">
+                                <span class="collection-badge">Project Pack — 4 Tracks</span>
+                                <div class="collection-title">BlancoXCBeats Collection</div>
+                                <div class="collection-artist">by BlancoXCBeats</div>
+                            </div>
+                            <div class="collection-price">R35</div>
+                        </div>
+
+                        <div class="collection-tags">
+                            <span class="ctag">FL Studio 26</span>
+                            <span class="ctag">Project Files</span>
+                            <span class="ctag">Sample Packs</span>
+                            <span class="ctag">Stems Included</span>
+                            <span class="ctag">4 Beats</span>
+                        </div>
+
+                        <p class="collection-desc">
+                            Full project files with <strong>stems and sample packs</strong> included for all four tracks. Made entirely in <strong>FL Studio 26</strong>. All four beats sold together as <strong>one package</strong>.
+                        </p>
+
+                        <div class="tracklist-label">Tracklist — Click to Play</div>
+                        <div class="tracklist">
+
+                            <div class="track-row">
+                                <div class="track-icon ti-purple"><i data-lucide="music"></i></div>
+                                <div class="track-info">
+                                    <div class="track-num-name"><span class="track-num">01</span><span class="track-name">EverSince</span></div>
+                                </div>
+                                <div class="mini-player" data-src="/_projects/_profile/_audio/EverSInce _-_BlancoXCBeats.mp3">
+                                    <button class="mini-play" aria-label="Play"><i data-lucide="play" class="icon-play"></i><i data-lucide="pause" class="icon-pause"></i></button>
+                                    <div class="mini-progress-wrap">
+                                        <div class="mini-bar-bg"><div class="mini-bar-fill"></div></div>
+                                        <div class="mini-time">0:00</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="track-row">
+                                <div class="track-icon ti-red"><i data-lucide="flame"></i></div>
+                                <div class="track-info">
+                                    <div class="track-num-name"><span class="track-num">02</span><span class="track-name">Had To Be Done</span></div>
+                                </div>
+                                <div class="mini-player" data-src="/_projects/_profile/_audio/Had_To_be_Done[BlancoXCBeats].mp3">
+                                    <button class="mini-play" aria-label="Play"><i data-lucide="play" class="icon-play"></i><i data-lucide="pause" class="icon-pause"></i></button>
+                                    <div class="mini-progress-wrap">
+                                        <div class="mini-bar-bg"><div class="mini-bar-fill"></div></div>
+                                        <div class="mini-time">0:00</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="track-row">
+                                <div class="track-icon ti-teal"><i data-lucide="zap"></i></div>
+                                <div class="track-info">
+                                    <div class="track-num-name"><span class="track-num">03</span><span class="track-name">Kyro (Remix)</span></div>
+                                </div>
+                                <div class="mini-player" data-src="/_projects/_profile/_audio/Kyro(Remix) - BlancoXCBeats.mp3">
+                                    <button class="mini-play" aria-label="Play"><i data-lucide="play" class="icon-play"></i><i data-lucide="pause" class="icon-pause"></i></button>
+                                    <div class="mini-progress-wrap">
+                                        <div class="mini-bar-bg"><div class="mini-bar-fill"></div></div>
+                                        <div class="mini-time">0:00</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="track-row">
+                                <div class="track-icon ti-amber"><i data-lucide="disc-3"></i></div>
+                                <div class="track-info">
+                                    <div class="track-num-name"><span class="track-num">04</span><span class="track-name">PEaCe</span></div>
+                                </div>
+                                <div class="mini-player" data-src="/_projects/_profile/_audio/PEaCe_[BLANCOXCBEATS].mp3">
+                                    <button class="mini-play" aria-label="Play"><i data-lucide="play" class="icon-play"></i><i data-lucide="pause" class="icon-pause"></i></button>
+                                    <div class="mini-progress-wrap">
+                                        <div class="mini-bar-bg"><div class="mini-bar-fill"></div></div>
+                                        <div class="mini-time">0:00</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="collection-vsts">
+                            <div class="collection-vsts-title">VSTs Used</div>
+                            <div class="vst-list">
+                                <span class="vst-chip">Baby Audio Reverb</span>
+                                <span class="vst-chip">Cymatics Illusion</span>
+                                <span class="vst-chip">FL Studio Native VSTs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="collection-footer">
+                        <a href="https://wa.me/27610859002?text=Hi%2C%20I%27d%20like%20to%20buy%20the%20BlancoXCBeats%204-track%20collection%20for%20R35" target="_blank" rel="noopener noreferrer" class="btn-buy">
+                            <i data-lucide="shopping-bag"></i>
+                            Buy All 4 — R35
+                        </a>
+                        <a href="https://wa.me/27610859002?text=Hi%2C%20I%20have%20a%20question%20about%20the%20BlancoXCBeats%20collection" target="_blank" rel="noopener noreferrer" class="btn-ask">
+                            <i data-lucide="message-circle"></i>
+                            Ask a Question
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add Your Beat -->
+        <section class="section" style="padding-top: 0;">
+            <div class="fade">
+                <div class="section-label">For Producers</div>
+                <div class="section-title">Beats For Sale</div>
+            </div>
+
+            <div class="sale-grid center fade">
+                <a href="https://wa.me/27610859002?text=Hi%2C%20I%27d%20like%20to%20add%20my%20beat%20to%20the%20beats%20page" target="_blank" rel="noopener noreferrer" class="sale-card glass">
+                    <div class="sale-left">
+                        <div class="sale-icon"><i data-lucide="plus"></i></div>
+                        <div class="sale-info">
+                            <h4>Add Your Beat</h4>
+                            <p>Get your beat listed on this page</p>
+                        </div>
+                    </div>
+                    <div class="sale-arrow"><i data-lucide="arrow-right"></i></div>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <span>© 2026 kasimadewebz. All rights reserved.</span>
+        <a href="mailto:fluentwebsites026@gmail.com">fluentwebsites026@gmail.com</a>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // ── Mobile menu ──
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        let menuOpen = false;
+        mobileMenuBtn.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            mobileMenu.classList.toggle('open', menuOpen);
+        });
+        mobileMenu.querySelectorAll('a').forEach(el => {
+            el.addEventListener('click', () => { menuOpen = false; mobileMenu.classList.remove('open'); });
+        });
+
+        // ── Hero fade on scroll ──
+        const heroEl = document.getElementById('heroEl');
+        const heroImg = document.getElementById('heroImg');
+
+        if (heroImg.complete) heroImg.style.transform = 'scale(1.08)';
+
+        heroImg.addEventListener('load', () => { heroImg.style.transform = 'scale(1.08)'; });
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const heroHeight = heroEl.offsetHeight;
+            if (scrollY < heroHeight) {
+                const progress = scrollY / (heroHeight * 0.6);
+                heroImg.style.opacity = Math.max(0, 1 - progress);
+                heroImg.style.transform = 'scale(' + (1.08 + progress * 0.1) + ')';
+                progress > 0.1 ? heroEl.classList.add('scrolled') : heroEl.classList.remove('scrolled');
+            } else {
+                heroEl.classList.add('scrolled');
+            }
+        }, { passive: true });
+
+        // ── Shared player logic ──
+        let currentAudio = null;
+
+        function fmt(s) {
+            if (isNaN(s) || !isFinite(s)) return '0:00';
+            return Math.floor(s / 60) + ':' + (Math.floor(s % 60) < 10 ? '0' : '') + Math.floor(s % 60);
+        }
+
+        function stopCurrent() {
+            if (!currentAudio) return;
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            const ctx = currentAudio._ctx;
+            if (ctx) {
+                const btn = ctx.querySelector('.play-btn, .mini-play');
+                if (btn) { btn.classList.remove('playing'); }
+                const fill = ctx.querySelector('.progress-bar-fill, .mini-bar-fill');
+                if (fill) fill.style.width = '0%';
+                const td = ctx.querySelector('.time-display, .mini-time');
+                if (td) td.textContent = '0:00';
+            }
+            currentAudio = null;
+        }
+
+        function setupPlayer(wrap) {
+            const src = wrap.dataset.src;
+            const isMini = wrap.classList.contains('mini-player');
+            const btn = wrap.querySelector('.play-btn, .mini-play');
+            const fill = wrap.querySelector('.progress-bar-fill, .mini-bar-fill');
+            const barBg = wrap.querySelector('.progress-bar-bg, .mini-bar-bg');
+            const timeEl = wrap.querySelector('.time-display, .mini-time');
+
+            const audio = new Audio();
+            audio.preload = 'metadata';
+            audio.src = src;
+
+            let playing = false;
+            let loaded = false;
+
+            audio.addEventListener('loadedmetadata', () => {
+                loaded = true;
+                if (isMini) {
+                    timeEl.textContent = '0:00';
+                } else {
+                    timeEl.textContent = '0:00 / ' + fmt(audio.duration);
+                }
+            });
+
+            audio.addEventListener('timeupdate', () => {
+                if (!loaded) return;
+                const pct = (audio.currentTime / audio.duration) * 100;
+                fill.style.width = pct + '%';
+                if (isMini) {
+                    timeEl.textContent = fmt(audio.currentTime);
+                } else {
+                    timeEl.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+                }
+            });
+
+            audio.addEventListener('ended', () => {
+                playing = false;
+                btn.classList.remove('playing');
+                fill.style.width = '0%';
+                if (isMini) {
+                    timeEl.textContent = '0:00';
+                } else {
+                    timeEl.textContent = '0:00 / ' + fmt(audio.duration);
+                }
+                if (currentAudio === audio) currentAudio = null;
+            });
+
+            btn.addEventListener('click', () => {
+                if (playing) {
+                    audio.pause();
+                    playing = false;
+                    btn.classList.remove('playing');
+                    if (currentAudio === audio) currentAudio = null;
+                } else {
+                    stopCurrent();
+                    audio.play().then(() => {
+                        playing = true;
+                        btn.classList.add('playing');
+                        currentAudio = audio;
+                        audio._ctx = wrap;
+                    }).catch(() => showToast('Could not play audio'));
+                }
+            });
+
+            barBg.addEventListener('click', (e) => {
+                if (!loaded) return;
+                const rect = barBg.getBoundingClientRect();
+                const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                audio.currentTime = pct * audio.duration;
+                fill.style.width = (pct * 100) + '%';
+            });
+        }
+
+        // Init featured player
+        setupPlayer(document.querySelector('.player-wrap[data-src]'));
+
+        // Init now-playing label for featured
+        const np = document.getElementById('nowPlaying');
+        const featuredBtn = document.querySelector('.player-wrap .play-btn');
+        if (featuredBtn && np) {
+            featuredBtn.addEventListener('click', () => {
+                setTimeout(() => {
+                    if (featuredBtn.classList.contains('playing')) np.classList.add('show');
+                    else np.classList.remove('show');
+                }, 50);
+            });
+        }
+
+        // Init all mini players
+        document.querySelectorAll('.mini-player[data-src]').forEach(setupPlayer);
+
+        // ── Toast ──
+        function showToast(msg, d) {
+            d = d || 3000;
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), d);
+        }
+
+        // ── Scroll fade ──
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.08 });
+        document.querySelectorAll('.fade').forEach(el => obs.observe(el));
+    </script>
+</body>
+</html>
